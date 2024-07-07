@@ -15,11 +15,12 @@ const userSchema=new Schema({
             
         email:{
             type:String,
-            required:true
+            required:true,
+            unique:true
             },
             password:{
                 type:String,
-                required:true
+               
                 },
                 refreshToken:{
                     type:[String],
@@ -37,15 +38,23 @@ const userSchema=new Schema({
 },{
     timestamps: true
 })
-userSchema.pre("save", async function (next) {
-    if(!this.isModified("password")) return next();
 
-    this.password = await bcrypt.hash(this.password, 10)
-    next()
-})
+// userSchema.pre("save", async function (next) {
+//     if(!this.isModified("password")) return next();
+
+//     this.password =  bcrypt.hash(this.password, 10)
+//     next()
+// })
  userSchema.methods.isCorrectPassword=async function (password){
 
  return await bcrypt.compare(password,this.password)
+}
+
+userSchema.methods.encryptPassword=async function(user,password){
+user.password=await bcrypt.hash(password,10)
+console.log(user)
+await user.save()
+
 }
 
 userSchema.methods.generateRefreshToken=function() {
