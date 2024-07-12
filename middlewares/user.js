@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import User from '../Models/User.js'
-import Teacher from '../Models/teacher.js'
+import Teacher from '../Models/Teacher.js'
+
 
 const verifyToken=async(req,res,next) => { 
     console.log(req.cookies,req.headers)
