@@ -1,5 +1,5 @@
 import express from "express";
-import Teacher from "../Models/teacher.js";
+import Teacher from "../Models/Teacher.js";
 
 import bcrypt from 'bcryptjs'
 import jwt from "jsonwebtoken";
