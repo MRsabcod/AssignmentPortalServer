@@ -13,8 +13,13 @@ const courseSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    teacherId:{
+      type: String,
+    }
   },
   {
     timeStamps: true,
   }
 );
+const Course = mongoose.model("Course", courseSchema);
+export default Course;

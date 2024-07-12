@@ -5,7 +5,6 @@ import {
 import Grid from 'gridfs-stream'
 import crypto from 'crypto' 
 import path from 'path'
-import mongoose from 'mongoose'
 // const promise = mongoose.connect(`mongodb+srv://sabeebr97:sabeeb123@cluster001.2fq3xab.mongodb.net`, { useNewUrlParser: true });
 
 // const conn = mongoose.connection;

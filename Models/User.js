@@ -1,41 +1,48 @@
 import mongoose from 'mongoose'
-import {Schema} from 'mongoose'
+import { Schema } from 'mongoose'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-const userSchema=new Schema({
-    fullName:{
-        type:String,
-        required:true
-        },
-        cnic:{
-            type:String,
-            required:true,
-          
-            },
-            
-        email:{
-            type:String,
-            required:true,
-            unique:true
-            },
-            password:{
-                type:String,
-               
-                },
-                refreshToken:{
-                    type:[String],
-                    default:[''],
-                    required:true
-                },
-                avatar:{
-                    type:String,
-                    // required:true
-                },
-                contact:{
-                    type:String,
-                    required:false,
-                },
-},{
+const userSchema = new Schema({
+    fullName: {
+        type: String,
+        required: true
+    },
+    cnic: {
+        type: String,
+        required: true,
+
+    },
+
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    password: {
+        type: String,
+
+    },
+    refreshToken: {
+        type: [String],
+        default: [''],
+        required: true
+    },
+    avatar: {
+        type: String,
+        // required:true
+    },
+    contact: {
+        type: String,
+        required: false,
+    },
+    courses:[
+        {
+            id:{
+                type:String
+            }
+        }
+    ]
+}, {
     timestamps: true
 })
 
@@ -45,33 +52,33 @@ const userSchema=new Schema({
 //     this.password =  bcrypt.hash(this.password, 10)
 //     next()
 // })
- userSchema.methods.isCorrectPassword=async function (password){
+userSchema.methods.isCorrectPassword = async function (password) {
 
- return await bcrypt.compare(password,this.password)
+    return await bcrypt.compare(password, this.password)
 }
 
-userSchema.methods.encryptPassword=async function(user,password){
-user.password=await bcrypt.hash(password,10)
-console.log(user)
-await user.save()
+userSchema.methods.encryptPassword = async function (user, password) {
+    user.password = await bcrypt.hash(password, 10)
+    console.log(user)
+    await user.save()
 
 }
 
-userSchema.methods.generateRefreshToken=function() {
- return jwt.sign({
-    _id:this._id,
-    email:this.email,
-    cnic:this.cnic,
+userSchema.methods.generateRefreshToken = function () {
+    return jwt.sign({
+        _id: this._id,
+        email: this.email,
+        cnic: this.cnic,
 
- }, 
- process.env.REFRESH_TOKEN_SECRET,
- {
-    expiresIn: process.env.REFRESH_TOKEN_EXPIRY
-    }
-)   
+    },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        }
+    )
 }
-userSchema.path('cnic').validate((e)=>{
-    return e?.length==13
-   },'cnic code must be 13 characters')
-const User=mongoose.model('User',userSchema)
+userSchema.path('cnic').validate((e) => {
+    return e?.length == 13
+}, 'cnic code must be 13 characters')
+const User = mongoose.model('User', userSchema)
 export default User

@@ -11,16 +11,16 @@ const assignemntSchema=new Schema({
             type:String,
             required:true},
 
-            teacherAttachedFile:{
+            teacherAttachedFileId:{
                 type:String,
             },
-            assignmentOfStudents:[{
-               cnic:{type:String},
-               rollNo:{type:String},
-               studentAttachedFile:{
-                type:String
-               }
-            }],
+            teacherAttachedLink:{
+                type:String,
+            },
+            teacherAttachedFile:{
+                type:[String],
+
+            },
             courseId:{
                 type:String,
             }
