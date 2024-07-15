@@ -6,6 +6,7 @@ import { upload } from '../middlewares/multer.js'
 // import { verify } from 'jsonwebtoken'
 import verifyToken from '../middlewares/user.js'
 import uploadOnCloudinary from '../utils/cloudinary.js'
+import StudentAssignments from '../Models/StudentAssignments.js'
 
 
 const userRouter=express.Router()
@@ -60,7 +61,14 @@ userRouter.get('/',async (req, res) => {
             });
             const createdUser = await User.findById(user._id).select("-refreshToken");
             if(!createdUser) return res.send({error:'user not created'})
-                res.status(200).send({createdUser,message:"REGISTER SUCCESSFULLY"})
+                const createdStudentAssignments=await StudentAssignments.create({
+            studentId:createdUser._id,
+            studentName:createdUser.fullName
+        })
+        if(!createdStudentAssignments) return res.send({error:'userAssignmentPortal not created'})
+
+        res.status(200).send({createdUser,message:"REGISTER SUCCESSFULLY",createdStudentAssignments})
+
         })
         userRouter.post('/createPassword',async(req,res)=>{
             const {password,cnic,email}=req.body

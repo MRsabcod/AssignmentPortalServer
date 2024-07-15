@@ -64,7 +64,6 @@ console.log(__dirname)
  fileToStream=await gfs.openDownloadStreamByName(file[0]?.filename).toArray()
  StreamToText=await fileToStream.toString('base64')
 
-console.log(fileToStream[0])
 // fs.writeFile(`${file[0].filename}`, fileToStream[0], (err) => {
 
 //   // In case of a error throw err.
