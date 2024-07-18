@@ -13,7 +13,7 @@ const studentAssignemntSchema=new Schema({
     assignments:{
         type:[
             {
-                AssignmentId:{
+                assignmentId:{
                     type:String,
                 },
                 studentAttachedLink:{
@@ -27,6 +27,12 @@ const studentAssignemntSchema=new Schema({
                 },
                 studentAttachedFileId:{
                     type:String,
+                },
+                grade:{
+                    type:Number,
+                    default:0,
+                    max:100
+                    
                 }
 
             }

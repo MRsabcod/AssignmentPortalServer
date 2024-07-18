@@ -17,7 +17,7 @@ import path from 'path'
 const storage = new GridFsStorage({
     url:'mongodb+srv://sabeebr97:sabeeb123@cluster001.2fq3xab.mongodb.net/hackathondb',
     file: (req, file) => {
-        console.log(req)
+        // console.log(req)
         return new Promise((resolve, reject) => {
             crypto.randomBytes(16, (err, buf) => {
                 if (err) {
