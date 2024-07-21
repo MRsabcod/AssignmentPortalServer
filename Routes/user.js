@@ -107,13 +107,14 @@ userRouter.post('/logout',verifyToken,(req,res)=>{
     res.status(200).send({msg:'done'})
 })
 userRouter.post('/updatePassword',async(req,res)=>{
-    const {oldPassword,newPassword}=req.body
+    const {oldPassword,newPassword,cnic}=req.body
     if(!oldPassword || !newPassword) return res.status(400).send({error:
         "old password and new password are required"})
-        const user=await User.findById(req.body._id)
-        const isMatch=await user.isCorrectPassword(oldPassword)
+        const user=await User.find({cnic})
+    
+        const isMatch=await user[0].isCorrectPassword(oldPassword)
         if(!isMatch) return res.status(400).send({error:"old password is incorrect"})
-            user.encryptPassword(user,newPassword)
+            user[0].encryptPassword(user[0],newPassword)
        
         res.status(200).send({msg:"password updated successfully"})
     

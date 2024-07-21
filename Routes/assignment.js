@@ -1,90 +1,165 @@
 import express from 'express'
 import Assignment from '../Models/Assignment.js'
-import fs from 'fs'
+import fs, { ReadStream } from 'fs'
 import path from 'path'
 import {
   fileURLToPath
 } from 'url'
 import { uploads } from '../middlewares/assignment.js'
-import {gfs} from '../db/index.js'
+import { gfs } from '../db/index.js'
 import mongoose from 'mongoose'
-const assignmentRouter=express.Router()
-assignmentRouter.get('/',async(req,res)=>{
-  const assignments=await Assignment.find()
-  let allAssignments=[]
-  let file=null;
-    assignments.map(async(doc)=>{
-      // console.log(doc,allAssignments)
-       file = await gfs.find({_id:new mongoose.Types.ObjectId(doc?.teacherAttachedFileId)}).toArray()   
-      const fileToStream= await gfs.openDownloadStreamByName( file[0]?.filename).toArray()
-    
-      const StreamToText=  fileToStream.toString('base64')
-      doc.teacherAttachedFile.push(StreamToText) 
-      await doc.save()
+const assignmentRouter = express.Router()
+assignmentRouter.get('/', async (req, res) => {
+  try {
+    const assignments = await Assignment.find()
+    let allAssignments = []
+    let file = null;
+    let base64String = [];
+    await Promise.all( assignments.map(async (doc) => {
+      if (doc.teacherAttachedFileIds && doc.teacherAttachedFileIds.length > 0) {
+        // Create an array of promises
+        const filePromises = doc.teacherAttachedFileIds.map(async (fileId) => {
+          const files = await gfs.find({ _id: new mongoose.Types.ObjectId(fileId) }).toArray();
+          if (files && files.length > 0) {
+            const fileToStream = gfs.openDownloadStreamByName(files[0].filename);
+            const chunks = [];
 
+            fileToStream.on('data', (chunk) => {
+              chunks.push(chunk);
+            });
+
+            return new Promise((resolve, reject) => {
+              fileToStream.on('end', () => {
+                const fileBuffer = Buffer.concat(chunks);
+                const base64Data = fileBuffer.toString('base64');
+                resolve(base64Data);
+              });
+              fileToStream.on('error', (err) => {
+                reject(err);
+              });
+            });
+          }
+        });
+
+        // Wait for all promises to resolve
+        base64String = await Promise.all(filePromises);
+        console.log(base64String)
       
-      
-  //   // In case of as error throw err.
-//   if (err) res.send(err)
-// })
-// console.log(fs.readFileSync(`${file[0].filename}`, "utf8"));
-// allAssignments.push({doc,teachersFile:StreamToText})
+      }
 
-})
 
-res.send({assignments})
+   
+
+    }))
+
+    res.json({ base64String, assignments })
+
+  }
+  catch (error) {
+    console.error('Error fetching assignment:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 
 // res.pipe(assignments)
 
 })
-assignmentRouter.post('/upload',uploads.single('file'),async(req,res)=>{
-const {title,desc,courseId}=req.body
-const assignment=await Assignment.create({
+assignmentRouter.post('/upload', uploads.array('files', 5), async (req, res) => {
+  const { title, desc, courseId } = req.body
+
+  const fileNames = req.files.map(file => file.id);
+
+  const assignment = await Assignment.create({
     title,
     desc,
     courseId,
-    teacherAttachedFileId:req.file.id
+    teacherAttachedFileIds: fileNames
+  })
+  const createdAssignment = await Assignment.findById(assignment._id).select('-courseId')
+  if (!createdAssignment)
+    return res.status(400).send({ error: 'Something went wrong' })
+  return res.status(200).send({ assignment: createdAssignment })
 })
-const createdAssignment=await  Assignment.findById(assignment._id).select('-courseId')
-if(!createdAssignment)
-    return res.status(400).send({error:'Something went wrong' })
-return res.status(200).send({assignment:createdAssignment})
+
+
+assignmentRouter.get('/assignment/:id', async (req, res) => {
+  // const assignemnt=await Assignment.findById(req.params.id)
+  // const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+  // const __dirname = path.dirname(__filename);
+  // let StreamToText;
+  // let base64String=[];
+  // let fileToStream;
+
+  //  assignemnt.teacherAttachedFileIds?.map(async(fileId)=>{
+  //     const file = await gfs.find({_id:new mongoose.Types.ObjectId(fileId)}).toArray()
+  //    if(file){
+  //  fileToStream=await gfs.openDownloadStreamByName(file[0]?.filename).toArray()
+  //  StreamToText=await fileToStream.toString('base64')
+
+  // // fs.writeFile(`${file[0].filename}`, fileToStream[0], (err) => {
+
+  // //   // In case of a error throw err.
+  // //   if (err) res.send(err)
+  // //     else {
+  // // console.log(fs.readFileSync(`${file[0].filename}`, "utf8"));
+
+  // //     }
+  // // })
+  //    }
+  //    base64String.push(  btoa(
+  //     String.fromCharCode(...new Uint8Array(fileToStream[0]))
+  //   ));
+
+  //   console.log(base64String)
+  // }) 
+
+
+  //  res.json({ base64String,assignemnt})
+
+  try {
+    const assignment = await Assignment.findById(req.params.id);
+    const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+    const __dirname = path.dirname(__filename);
+
+    let base64String = [];
+
+    if (assignment.teacherAttachedFileIds && assignment.teacherAttachedFileIds.length > 0) {
+      // Create an array of promises
+      const filePromises = assignment.teacherAttachedFileIds.map(async (fileId) => {
+        const files = await gfs.find({ _id: new mongoose.Types.ObjectId(fileId) }).toArray();
+        if (files && files.length > 0) {
+          const fileToStream = gfs.openDownloadStreamByName(files[0].filename);
+          const chunks = [];
+
+          fileToStream.on('data', (chunk) => {
+            chunks.push(chunk);
+          });
+
+          return new Promise((resolve, reject) => {
+            fileToStream.on('end', () => {
+              const fileBuffer = Buffer.concat(chunks);
+              const base64Data = fileBuffer.toString('base64');
+              resolve(base64Data);
+            });
+            fileToStream.on('error', (err) => {
+              reject(err);
+            });
+          });
+        }
+      });
+
+      // Wait for all promises to resolve
+      base64String = await Promise.all(filePromises);
+    }
+
+    res.json({ base64String, assignment });
+  } catch (error) {
+    console.error('Error fetching assignment:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+
 })
-
-
-assignmentRouter.get('/assignment/:id',async(req,res)=>{
-const assignemnt=await Assignment.findById(req.params.id)
-const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
-const __dirname = path.dirname(__filename);
-let StreamToText;
-let fileToStream;
-console.log(__dirname)
-    const file = await gfs.find({_id:new mongoose.Types.ObjectId(assignemnt?.teacherAttachedFileId)}).toArray()
-   if(file){
- fileToStream=await gfs.openDownloadStreamByName(file[0]?.filename).toArray()
- StreamToText=await fileToStream.toString('base64')
-
-// fs.writeFile(`${file[0].filename}`, fileToStream[0], (err) => {
-
-//   // In case of a error throw err.
-//   if (err) res.send(err)
-//     else {
-// console.log(fs.readFileSync(`${file[0].filename}`, "utf8"));
-  
-//     }
-// })
-   }
-   const base64String = btoa(
-    String.fromCharCode(...new Uint8Array(fileToStream[0]))
-  );
-  console.log(base64String)
-  
-   res.send(base64String)
- 
-   
-})
-assignmentRouter.post("/del/:id", async(req, res) => {
-  const assignemnt=await Assignment.findById(req.params.id)
+assignmentRouter.post("/del/:id", async (req, res) => {
+  const assignemnt = await Assignment.findById(req.params.id)
 
   gfs.delete(new mongoose.Types.ObjectId(assignemnt.teacherAttachedFile), (err, data) => {
     if (err) return res.status(404).json({ err: err.message });
