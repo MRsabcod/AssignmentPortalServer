@@ -15,6 +15,7 @@ assignmentRouter.get('/', async (req, res) => {
     let allAssignments = []
     let file = null;
     let base64String = [];
+    // let allAssignments = {};
     await Promise.all( assignments.map(async (doc) => {
       if (doc.teacherAttachedFileIds && doc.teacherAttachedFileIds.length > 0) {
         // Create an array of promises
@@ -43,16 +44,16 @@ assignmentRouter.get('/', async (req, res) => {
 
         // Wait for all promises to resolve
         base64String = await Promise.all(filePromises);
-        console.log(base64String)
-      
+        
       }
+      allAssignments.push({base64String,doc})
 
 
    
 
     }))
 
-    res.json({ base64String, assignments })
+    res.json({ allAssignments})
 
   }
   catch (error) {

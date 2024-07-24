@@ -25,9 +25,9 @@ const studentAssignemntSchema=new Schema({
                 studentAttachedFileContentType:{
                     type:String,
                 },
-                studentAttachedFileId:{
+                studentAttachedFileIds:[{
                     type:String,
-                },
+                }],
                 grade:{
                     type:Number,
                     default:0,

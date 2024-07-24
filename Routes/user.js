@@ -17,8 +17,8 @@ const generateToken = async(userId) =>{
         
         const token = user.generateRefreshToken()
 
-        user.refreshToken = token
-        await user.save({ validateBeforeSave: false })
+        // user.refreshToken = token
+        // await user.save({ validateBeforeSave: false })
 
         return { token}
 
@@ -76,7 +76,7 @@ userRouter.get('/',async (req, res) => {
             if(!user) return res.status(400).send({error:"cnic or email is invalid"})
           user.encryptPassword(user,password)
     // user.password=password
-            // await user.save()
+    //         await user.save()
              res.send({password:user.password,message:"password created successfully"})
         })
 
@@ -92,7 +92,7 @@ userRouter.post('/login',async(req,res)=>{
         const {token}=await generateToken(user._id)
    console.log(token)
 
- res.send({token})
+ res.send({user,token})
 // console.log(res.header('set-cookie'))
 })
 
