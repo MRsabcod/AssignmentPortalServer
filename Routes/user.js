@@ -92,7 +92,7 @@ userRouter.post('/login',async(req,res)=>{
         const {token}=await generateToken(user._id)
    console.log(token)
 
- res.send({token})
+ res.send(user , {token})
 // console.log(res.header('set-cookie'))
 })
 
