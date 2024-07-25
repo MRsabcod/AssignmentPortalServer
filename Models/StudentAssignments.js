@@ -10,6 +10,7 @@ const studentAssignemntSchema=new Schema({
     courseId:{
         type:String,
     },
+    
     assignments:{
         type:[
             {
@@ -41,6 +42,7 @@ const studentAssignemntSchema=new Schema({
     },
     totalPercentage:{
         type:Number,
+     
     }
 
 })
