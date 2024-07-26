@@ -117,8 +117,8 @@ userRouter.post('/updatePassword', async (req, res) => {
 
     const isMatch = await user[0].isCorrectPassword(oldPassword)
     if (!isMatch) return res.status(400).send({ error: "old password is incorrect" })
-    user[0].encryptPassword(user[0], newPassword)
-await user[0].save()
+    await user[0].encryptPassword(user[0], newPassword)
+
     res.status(200).send({ msg: "password updated successfully" })
 
 })

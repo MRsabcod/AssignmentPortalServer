@@ -59,7 +59,7 @@ userSchema.methods.isCorrectPassword = async function (password) {
 
 userSchema.methods.encryptPassword = async function (user, password) {
     user.password = await bcrypt.hash(password, 10)
-    // await user.save()
+    await user.save()
      console.log(user.password)
 
 }
