@@ -65,22 +65,25 @@ assignmentRouter.get('/', async (req, res) => {
 
 })
 assignmentRouter.post('/upload', uploads.array('files', 5), async (req, res) => {
-  const { title, desc, courseId } = req.body
-
-  const fileNames = req.files.map(file => file.id);
-
+  const fileNames = req.files.filter(file =>file.size<=1000).map(file=>file.id);
+  const { title, desc, courseId,deadline } = req.body
+console.log(fileNames)
+if(fileNames?.length){
   const assignment = await Assignment.create({
     title,
     desc,
     courseId,
+    deadline,
     teacherAttachedFileIds: fileNames
   })
   const createdAssignment = await Assignment.findById(assignment._id).select('-courseId')
   if (!createdAssignment)
     return res.status(400).send({ error: 'Something went wrong' })
   return res.status(200).send({ assignment: createdAssignment })
-})
 
+
+
+}})
 
 assignmentRouter.get('/assignment/:id', async (req, res) => {
   // const assignemnt=await Assignment.findById(req.params.id)
@@ -118,8 +121,7 @@ assignmentRouter.get('/assignment/:id', async (req, res) => {
 
   try {
     const assignment = await Assignment.findById(req.params.id);
-    const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
-    const __dirname = path.dirname(__filename);
+ 
 
     let base64String = [];
 

@@ -8,6 +8,7 @@ const assignemntSchema=new Schema({
         required:true
         },
         deadline:{
+            required:true,
             type:Date,
         },
         desc:{  
