@@ -42,7 +42,7 @@ const studentAssignemntSchema=new Schema({
     },
     totalPercentage:{
         type:Number,
-     
+        default : 0,
     }
 
 })

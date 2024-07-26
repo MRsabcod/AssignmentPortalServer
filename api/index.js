@@ -9,7 +9,11 @@ dotenv.config();
 const app=express()
 app.use(cookieParser())
 app.use(express.json())
+<<<<<<< HEAD
 app.use(cors());
+=======
+app.use(cors({}));
+>>>>>>> 9ac696c749f5a97e359d5e218798ad4d489c8b9e
 app.use(express.urlencoded({ extended: false }))
 connectDB()
 .then(() => {
