@@ -77,7 +77,7 @@ userRouter.post('/createPassword', async (req, res) => {
     if (!user) return res.status(400).send({ error: "cnic or email is invalid" })
     user.encryptPassword(user, password)
     // user.password=password
-    //         await user.save()
+            await user.save()
     res.send({ password: user.password, message: "password created successfully" })
 })
 
@@ -117,7 +117,8 @@ userRouter.post('/updatePassword', async (req, res) => {
 
     const isMatch = await user[0].isCorrectPassword(oldPassword)
     if (!isMatch) return res.status(400).send({ error: "old password is incorrect" })
-    console.log(user[0].encryptPassword(user[0], newPassword))
+    user[0].encryptPassword(user[0], newPassword)
+await user[0].save()
     res.status(200).send({ msg: "password updated successfully" })
 
 })
