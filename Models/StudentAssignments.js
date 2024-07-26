@@ -7,13 +7,14 @@ const studentAssignemntSchema=new Schema({
     studentName:{
         type:String,
     },
-    courseId:{
-        type:String,
-    },
+    
     
     assignments:{
         type:[
             {
+                courseId:{
+                    type:String,
+                },
                 assignmentId:{
                     type:String,
                 },

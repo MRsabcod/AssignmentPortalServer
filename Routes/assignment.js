@@ -1,14 +1,54 @@
 import express from 'express'
 import Assignment from '../Models/Assignment.js'
 import fs, { ReadStream } from 'fs'
-import path from 'path'
-import {
-  fileURLToPath
-} from 'url'
+import apikeys from '../utils/apikey.json'
+import {google} from 'googleapis'
+
 import { uploads } from '../middlewares/assignment.js'
 import { gfs } from '../db/index.js'
 import mongoose from 'mongoose'
 const assignmentRouter = express.Router()
+/**
+ * Insert new file.
+const fs = require('fs');
+const {GoogleAuth} = require('google-auth-library');
+const {google} = require('googleapis');
+ * @return{obj} file Id
+ * */
+async function authorize(){
+  const jwtClient=new google.auth.JWT(
+    apikeys.client_email,
+    
+    null,apikeys.private_key,
+    SCOPE
+  )
+}
+async function uploadBasic() {
+
+  // Get credentials and build service
+  // TODO (developer) - Use appropriate auth mechanism for your app
+ 
+  const service = google.drive({version: 'v3', auth:'43be80cc078b7efa27eb70f399430ca5a0ba7f7a'});
+  const requestBody = {
+    name: 'photo.jpg',
+    fields: 'id',
+  };
+  const media = {
+    mimeType: 'image/jpeg',
+    body: fs.createReadStream('files/photo.jpg'),
+  };
+  try {
+    const file = await service.files.create({
+      requestBody,
+      media: media,
+    });
+    console.log('File Id:', file.data.id);
+    return file.data.id;
+  } catch (err) {
+    // TODO(developer) - Handle error
+    throw err;
+  }
+}
 assignmentRouter.get('/', async (req, res) => {
   try {
     const assignments = await Assignment.find()
