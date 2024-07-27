@@ -1,6 +1,6 @@
 import express from "express";
 import Assignment from "../Models/Assignment.js";
-import Users from "../Models/User.js";
+// import Users from "../Models/User.js";
 import StudentAssignments from "../Models/StudentAssignments.js";
 import fs, { ReadStream } from "fs";
 import apikeys from "../utils/apikey.json";
@@ -8,6 +8,7 @@ import { google } from "googleapis";
 import { uploads } from "../middlewares/assignment.js";
 import { gfs } from "../db/index.js";
 import mongoose from "mongoose";
+import User from "../Models/User.js";
 const assignmentRouter = express.Router();
 
 /**
@@ -251,7 +252,7 @@ assignmentRouter.get("/:assignmentId/students", async (req, res) => {
     if (!courseId) {
       return res.status(400).json({ message: "Course ID is required" });
     }
-    const students = await Users.aggregate([
+    const students = await User.aggregate([
       { $match: { "courses.id": courseId } },
       {
         $project: {
@@ -309,22 +310,27 @@ assignmentRouter.get("/:assignmentId/students", async (req, res) => {
       },
     ]);
 
-    const submittedStudentMap = new Map(submittedStudents.map(student => [student.studentId, student]));
-    const { submitted, nonSubmitted } = activeStudents.reduce((acc, student) => {
-      const studentId = student._id;
-      if (submittedStudentMap.has(studentId)) {
-        const submittedStudent = submittedStudentMap.get(studentId);
-        acc.submitted.push({
-          studentId: studentId,
-          studentName: student.fullName,
-          courses: student.courses,
-          assignments: submittedStudent.assignments
-        });
-      } else {
-        acc.nonSubmitted.push(student);
-      }
-      return acc;
-    }, { submitted: [], nonSubmitted: [] });
+    const submittedStudentMap = new Map(
+      submittedStudents.map((student) => [student.studentId, student])
+    );
+    const { submitted, nonSubmitted } = activeStudents.reduce(
+      (acc, student) => {
+        const studentId = student._id;
+        if (submittedStudentMap.has(studentId)) {
+          const submittedStudent = submittedStudentMap.get(studentId);
+          acc.submitted.push({
+            studentId: studentId,
+            studentName: student.fullName,
+            courses: student.courses,
+            assignments: submittedStudent.assignments,
+          });
+        } else {
+          acc.nonSubmitted.push(student);
+        }
+        return acc;
+      },
+      { submitted: [], nonSubmitted: [] }
+    );
 
     res.json({ unactiveStudents, submitted, nonSubmitted });
   } catch (err) {
@@ -365,5 +371,27 @@ assignmentRouter.patch("/:assignmentId/toggle-starred", async (req, res) => {
   }
 });
 
-export default assignmentRouter;
+assignmentRouter.patch("/:courseId/toggle-active", async (req, res) => {
+  const courseId = req.params.courseId;
+  const studentId = req.body.studentId;
+  try {
+    const user = await User.findById(studentId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
+    const course = user.courses.find((course) => course.ID === courseId);
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    course.active = !course.active;
+    await user.save();
+
+    res.status(200).json({ message: "Course active status toggled", course });
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred", error });
+  }
+});
+
+export default assignmentRouter;
