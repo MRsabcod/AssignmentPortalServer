@@ -18,6 +18,10 @@ const studentAssignemntSchema=new Schema({
                 assignmentId:{
                     type:String,
                 },
+                starred: {
+                    type: Boolean,
+                    default: false
+                },
                 studentAttachedLink:{
                     type:String,
                 },
@@ -32,7 +36,7 @@ const studentAssignemntSchema=new Schema({
                 }],
                 grade:{
                     type:Number,
-                    default:0,
+                    default:-1,
                     max:100
                     
                 }
