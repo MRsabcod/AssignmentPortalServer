@@ -60,55 +60,11 @@ const {google} = require('googleapis');
 
 assignmentRouter.get("/", async (req, res) => {
   try {
-    const assignments = await Assignment.find();
-    let allAssignments = [];
-    let file = null;
-    let base64String = [];
-    // let allAssignments = {};
-    await Promise.all(
-      assignments.map(async (doc) => {
-        if (
-          doc.teacherAttachedFileIds &&
-          doc.teacherAttachedFileIds.length > 0
-        ) {
-          // Create an array of promises
-          const filePromises = doc.teacherAttachedFileIds.map(
-            async (fileId) => {
-              const files = await gfs
-                .find({ _id: new mongoose.Types.ObjectId(fileId) })
-                .toArray();
-              if (files && files.length > 0) {
-                const fileToStream = gfs.openDownloadStreamByName(
-                  files[0].filename
-                );
-                const chunks = [];
+    const assignments = await Assignment.find({courseId:req.body.courseId},{_id:1,title:1,deadline:1,});
+    
+    
 
-                fileToStream.on("data", (chunk) => {
-                  chunks.push(chunk);
-                });
-
-                return new Promise((resolve, reject) => {
-                  fileToStream.on("end", () => {
-                    const fileBuffer = Buffer.concat(chunks);
-                    const base64Data = fileBuffer.toString("base64");
-                    resolve(base64Data);
-                  });
-                  fileToStream.on("error", (err) => {
-                    reject(err);
-                  });
-                });
-              }
-            }
-          );
-
-          // Wait for all promises to resolve
-          base64String = await Promise.all(filePromises);
-        }
-        allAssignments.push({ base64String, doc });
-      })
-    );
-
-    res.json({ allAssignments });
+    res.json({ assignments });
   } catch (error) {
     console.error("Error fetching assignment:", error);
     res.status(500).json({ error: "Internal server error" });
