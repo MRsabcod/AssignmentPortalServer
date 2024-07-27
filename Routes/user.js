@@ -34,7 +34,7 @@ userRouter.get('/', async (req, res) => {
     res.send({ data: users, message: "FETCH SUCCESSFULLY" })
 })
 userRouter.post('/register', upload.fields([{ name: "avatar", maxCount: 1 }]), async (req, res) => {
-    const { email, fullName, cnic, contact } = req.body
+    const { email, fullName, cnic, contact,courses } = req.body
     const password = Math.random(9)
     //    console.log(req.files?.avatar[0]?.path)
     //    if (req.file) {
@@ -58,7 +58,8 @@ userRouter.post('/register', upload.fields([{ name: "avatar", maxCount: 1 }]), a
         cnic,
         email,
         password,
-        contact
+        contact,
+        courses
     });
     const createdUser = await User.findById(user._id).select("-refreshToken");
     if (!createdUser) return res.send({ error: 'user not created' })
@@ -122,4 +123,6 @@ userRouter.post('/updatePassword', async (req, res) => {
     res.status(200).send({ msg: "password updated successfully" })
 
 })
+
+  
 export default userRouter
