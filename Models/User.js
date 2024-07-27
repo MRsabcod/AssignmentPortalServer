@@ -39,6 +39,10 @@ const userSchema = new Schema({
         {
             id:{
                 type:String
+            },
+            active: {
+                type: Boolean,
+                default: true
             }
         }
     ]
