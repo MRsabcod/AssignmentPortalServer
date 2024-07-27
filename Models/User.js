@@ -37,8 +37,15 @@ const userSchema = new Schema({
     },
     courses:[
         {
-            id:{
+            ID:{
                 type:String
+            },
+            active: {
+              type: Boolean,
+              default: true
+            },
+            rollNo: {
+                type: Number,
             }
         }
     ]
