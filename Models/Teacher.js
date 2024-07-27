@@ -23,9 +23,12 @@ const teacherSchema = new mongoose.Schema(
     contact: {
         type: String,
       },
-    courses: {
-      type: Array,
-    },
+    courses: [
+      {
+            ID:{
+                type:String
+            },
+    }]
   },
   {
     timestamps: true,

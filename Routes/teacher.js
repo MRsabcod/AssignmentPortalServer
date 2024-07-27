@@ -31,7 +31,7 @@ const generateToken = async (cnic) => {
 };
 
 teacherRouter.post("/register", async (req, res) => {
-  const { email, fullName, cnic, contact } = req.body;
+  const { email, fullName, cnic, contact,courses } = req.body;
 const password=Math.random(9)
 
   const existedTeacher = await Teacher.findOne({
@@ -46,6 +46,7 @@ const password=Math.random(9)
     password,
     email,
     contact,
+    courses
   });
   const createdTeacher = await Teacher.findById(teacher._id).select(
     "-password -refreshToken"
