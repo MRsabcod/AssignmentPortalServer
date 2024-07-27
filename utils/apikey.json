@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "skilled-flight-427709-d8",
+  "private_key_id": "d2bad01bae458934d4c31f89f10264c052bc276e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCusbD41WT5NOrl\nGEUimCEvJFsdXoaE9zWImsob/L1DxZONR2ZQXrZnD1eyyBpX4KgRb2HWs/4xS5sL\n30tqFfYY4EaylVkDfvtcoT4bxPY+ZvE9WTeYa8JWogveS0i2dO71yMv765g/moYt\nyDIT3Va9cDxLbUqrDlmWnD6zP6H9d6aRP5pgP0ooaldZ/pHDTRvkJaARVx4ZRIR7\nAlAzTMo8PJAl0EmRZTVgk7CrmsWy3kNqXcA3ZW8sTbXYnpQmVyIC56rHUPN8+RN5\nsU2OR51IlskyadZVJK0t8c5+su5eebvIdVY6BZ2ApHgYkXH/e0qEF1ziEmHW4N58\nw6KieEGDAgMBAAECggEAN8DWLlRMqYxN+1fHmMbcsGL2AWWNoRoUp8hfAJek/+Aq\nu0gySywvIq0u3Awo/Cri+M2HeDJxyeHLVfqp4u2nYUESzyQDCK6aInIDlHFD9Z59\nF4tFxwt9NpD5ILT+O90N9rti/r+uE36JnErsUJKvgD41wAzda8JkrUCociS42l+x\nkuuLrZ7FP5S9/+OYnz4jYcl0oJLn+DXQumiSB5AolzZ5LoXmoqj408FBT3NrM+r2\nchO7WUQK1PqPDPyCM89O4MOs8Gh5snQcxkESIP4W+tVxEGtzJwC4DDOXUN75/iQP\n1g2M5F+seHyjE99QS96dg+PxdJUFUtTa1jhGRS2vIQKBgQDtVE2DK3w0NDEk2Fqq\ns08knrFfLfpHr9VLT7fBiViNM7V1haVjqdAV7rBnVjYIGuUNmhxwOIHQZnlbCk12\nvP2HbPxoW6odytbgbuv7oIxdw3ihS15debMuI9StLosDakBQuIWZJCwBegsfr1MY\nmMGTlL3YdJWTRWrG+FnD2/zbrQKBgQC8b/IoIZbwkgnvCPCc9GUi/dGWGUVUyFd3\nou2UyC7jTS2OM+JgooIJHHrlQVxio2cwduFvj6okg0dnr/fsf7SI0CW+O818T+b4\nUBKFjcWHkxDKqgmE3uvBXbBmobEDa1A1VGlQRxg3UVgKg1uTLm/3oFztiJRuH48W\nvsg0rak37wKBgQDjAjNOV2brjEzBoI1BIFiAf6bLkvAGaAMOkYcEAXsJPT/B1P85\nEHIwuGpVvdna8NbNpu6yzOomzA4ibf1gqS+cvTvGGn/jFWVpsc/ZlV0ORu344l21\n7bXdWXqR2KYxsw0n6QgpTrclBnbjbNGAAoWOw8S/6ew0vT6AaYd7V85K1QKBgDBr\nc4XsW6SlYfgSDAHIqtQ69EflZnNKp28OZo38gk/V3QbVPi4mk9NThiCyktKlujYx\n1eucttN7CDYUeVhD2FfvZENlin+O6IKV0KyQqVkU6ROqbZe+0EV3lYRJt/pw8MND\nVWxTWF2egUjyR+2h2ROAGWDP35QMd/AYRcmDdh/xAoGANBOCuX3ZdSepRRh10rA5\nVQbHY4XtSn33S0MMs9STAPfiX2TmCsJ8OgPx4o5YD/uuYIn+e5wHjaYer7whp9Dg\n0XVD+tGiFVJmyyqJzxOWs9IyM2qltxxcOGvpgIjUjtWBkwr7LWWVHzNKThsyhMHO\nP9K0oBmdM0kls5rPf+Zq60Y=\n-----END PRIVATE KEY-----\n",
+  "client_email": "smit-assignment-portal@skilled-flight-427709-d8.iam.gserviceaccount.com",
+  "client_id": "110290894579842944175",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/smit-assignment-portal%40skilled-flight-427709-d8.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

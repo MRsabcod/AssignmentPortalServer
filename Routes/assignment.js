@@ -1,12 +1,16 @@
 import express from 'express'
 import Assignment from '../Models/Assignment.js'
 import fs, { ReadStream } from 'fs'
-import apikeys from '../utils/apikey.json'
+import apikeys   from '../utils/apikey.json' assert { type: "json" };
+import credentialsjson   from '../utils/credentials.json' assert { type: "json" };
 import {google} from 'googleapis'
-
+import {GoogleAuth} from 'google-auth-library'
 import { uploads } from '../middlewares/assignment.js'
 import { gfs } from '../db/index.js'
 import mongoose from 'mongoose'
+import { upload } from '../middlewares/multer.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 const assignmentRouter = express.Router()
 /**
  * Insert new file.
@@ -15,40 +19,167 @@ const {GoogleAuth} = require('google-auth-library');
 const {google} = require('googleapis');
  * @return{obj} file Id
  * */
-async function authorize(){
-  const jwtClient=new google.auth.JWT(
-    apikeys.client_email,
+const scopes = ['https://www.googleapis.com/auth/drive'];
+// async function authorize(){
+//   const jwtClient=new google.auth.JWT(
+//     apikeys.client_email,
     
-    null,apikeys.private_key,
-    SCOPE
-  )
-}
-async function uploadBasic() {
+//     null,apikeys.private_key,
+//     SCOPE
+//   )
+//   await jwtClient.authorize();
+//   return jwtClient;
+// }
+// async function uploadBasic(authClient) {
 
-  // Get credentials and build service
-  // TODO (developer) - Use appropriate auth mechanism for your app
+//   // Get credentials and build service
+//   // TODO (developer) - Use appropriate auth mechanism for your app
  
-  const service = google.drive({version: 'v3', auth:'43be80cc078b7efa27eb70f399430ca5a0ba7f7a'});
-  const requestBody = {
-    name: 'photo.jpg',
-    fields: 'id',
-  };
-  const media = {
-    mimeType: 'image/jpeg',
-    body: fs.createReadStream('files/photo.jpg'),
-  };
+  
+//   return new Promise((resolve,rejected)=>{
+//     const drive = google.drive({version:'v3',auth:authClient}); 
+//     var fileMetaData = {
+//         name:'7d8ec661c968d79612600ef022bb296d.js',    
+//         parents:['1Q09niCuzWb6nsrs-U_Tx6h2SFbQRcEFb'] // A folder ID to which file will get uploaded
+//     }
+//     drive.files.create({
+//         resource:fileMetaData,
+//         media:{
+//             body: fs.createReadStream('7d8ec661c968d79612600ef022bb296d.js'), // files that will get uploaded
+//             mimeType:'application/javascript'
+//         },
+//         fields:'id'
+//     },function(error,file){
+//         if(error){
+//             return rejected(error)
+//         }
+//         resolve(file);
+//     })
+// });
+// }
+// authorize().then(uploadBasic).catch("error",console.error());
+/**
+ * Insert new file.
+ * @return{obj} file Id
+ * */
+const oauth2Client = new google.auth.OAuth2(credentialsjson.web.client_id, credentialsjson.web.client_secret, 'http://localhost:3001/assignments/auth/google/');
+
+const authUrl = oauth2Client.generateAuthUrl({
+  // 'online' (default) or 'offline' (gets refresh_token)
+  access_type: 'offline',
+  /** Pass in the scopes array defined above.
+  * Alternatively, if only one scope is needed, you can pass a scope URL as a string */
+  scope: scopes,
+  // Enable incremental authorization. Recommended as a best practice.
+  include_granted_scopes: true
+});
+oauth2Client.setCredentials({
+  refresh_token: "1//03ZZe-FQYeVLRCgYIARAAGAMSNwF-L9IrwEm6JjtsgBc-KxZmm7u60GZ3NJgJ2vJ5DQOMltbx9fGe-FqDJu6dysiQioTXbhgHgq8",
+access_token:"ya29.a0AXooCgukedqloNBLAc5ajJBqui0uHegYScwe6jsfPNOsKZeLKRp8J5DT52bitKoTCMH0-WemDsEgxi4C7XTzY9aaHtJTiZFN7_HJfSKrZ2COXaoNI-Vlt5lyStjtWOOsvNB7DnHmnt0RcSIU2iB46Zu9fttswJ833tNOaCgYKAbASARASFQHGX2Mi5wt2uze57CiPI3itu5msAw0171"
+});
+// async function uploadBasic(authClient) {
+
+
+//   // Get credentials and build service
+//   // TODO (developer) - Use appropriate auth mechanism for your app
+//   const auth = new GoogleAuth({
+//     scopes: 'https://www.googleapis.com/auth/drive',
+//   });
+//   const service = google.drive({version: 'v3', auth:oAuth2Client});
+//   const requestBody = {
+//     name: '7d8ec661c968d79612600ef022bb296d.js',
+//     fields: 'id',
+//   };
+//   const media = {
+//     mimeType: 'application/javascript',
+//     body: fs.createReadStream('7d8ec661c968d79612600ef022bb296d.js'),
+//   };
+//   try {
+//     const file = await service.files.create({
+//       requestBody,
+//       media: media,
+//     });
+//     console.log('File Id:', file.data.id);
+//     return file.data.id;
+//   } catch (err) {
+//     // TODO(developer) - Handle error
+//     throw err;
+//   }
+// }
+// uploadBasic()
+var drive = google.drive({
+  version: "v3",
+  auth: oauth2Client,
+});
+assignmentRouter.get('/auth/google', (req, res) => {
+  res.send(authUrl);
+});
+assignmentRouter.get('/auth/google/callback', async (req, res) => {
+ 
+
   try {
-    const file = await service.files.create({
-      requestBody,
-      media: media,
+    
+    // Exchange the authorization code for access and refresh tokens
+    // const { tokens } = await oauth2Client.getToken(code);
+    oauth2Client.setCredentials({
+      refresh_token: "1//03ZZe-FQYeVLRCgYIARAAGAMSNwF-L9IrwEm6JjtsgBc-KxZmm7u60GZ3NJgJ2vJ5DQOMltbx9fGe-FqDJu6dysiQioTXbhgHgq8",
+    access_token:"ya29.a0AXooCgukedqloNBLAc5ajJBqui0uHegYScwe6jsfPNOsKZeLKRp8J5DT52bitKoTCMH0-WemDsEgxi4C7XTzY9aaHtJTiZFN7_HJfSKrZ2COXaoNI-Vlt5lyStjtWOOsvNB7DnHmnt0RcSIU2iB46Zu9fttswJ833tNOaCgYKAbASARASFQHGX2Mi5wt2uze57CiPI3itu5msAw0171"
     });
-    console.log('File Id:', file.data.id);
-    return file.data.id;
-  } catch (err) {
-    // TODO(developer) - Handle error
-    throw err;
+
+    // Save the tokens in a database or session for future use
+
+    // Redirect the user to a success page or perform other actions
+    res.send('Authentication successful!');
+  } catch (error) {
+    console.error('Error authenticating:', error);
+    res.status(500).send('Authentication failed.');
   }
-}
+});
+assignmentRouter.post('/uploadFile', upload.single('file'), async (req, res) => {
+  try {
+    console.log(import.meta.url)
+  //   const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+  // const __dirname = path.dirname(__filename);
+  //   const filePath = path.join("C:\\Users\\IT EXPERT\\Desktop\\AssignmentPortalServer\\", req.file.path);
+    const fileMetadata = {
+      name: req.file.originalname,
+      parents: ['1Q09niCuzWb6nsrs-U_Tx6h2SFbQRcEFb']  // Specify the folder ID here
+    };
+    const media = {
+      mimeType: req.file.mimetype,
+      body: fs.createReadStream(`C:\\Users\\IT EXPERT\\Desktop\\AssignmentPortalServer\\${req.file.path}`)
+    };
+    // console.log(fileMetadata,media)
+
+    const response =  drive.files.create({
+      resource: fileMetadata,
+      media: media,
+      fields: 'id',
+
+    });
+
+    // Clean up the file from the server
+    // fs.unlinkSync(filePath);
+await response.then((res)=>console.log(res))
+    res.send(`File uploaded successfully: ${response}`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error uploading file');
+  }
+});
+assignmentRouter.get('/files', async (req, res) => {
+  try {
+    const response = await drive.files.list({
+      pageSize: 10, // Set the desired number of files to retrieve
+      fields: 'files(name, id)', // Specify the fields to include in the response
+    });
+    const files = response.data.files;
+    res.json(files);
+  } catch (err) {
+    console.error('Error listing files:', err);
+    res.status(500).json({ error: 'Failed to list files' });
+  }
+});
 assignmentRouter.get('/', async (req, res) => {
   try {
     const assignments = await Assignment.find()
