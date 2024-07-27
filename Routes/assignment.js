@@ -3,7 +3,7 @@ import Assignment from "../Models/Assignment.js";
 // import Users from "../Models/User.js";
 import StudentAssignments from "../Models/StudentAssignments.js";
 import fs, { ReadStream } from "fs";
-import apikeys from "../utils/apikey.json";
+// import apikeys from "../utils/apikey.json" 
 import { google } from "googleapis";
 import { uploads } from "../middlewares/assignment.js";
 import { gfs } from "../db/index.js";
@@ -19,44 +19,44 @@ const {google} = require('googleapis');
  * @return{obj} file Id
  * */
 
-async function authorize() {
-  const jwtClient = new google.auth.JWT(
-    apikeys.client_email,
+// async function authorize() {
+//   const jwtClient = new google.auth.JWT(
+//     apikeys.client_email,
 
-    null,
-    apikeys.private_key,
-    SCOPE
-  );
-}
+//     null,
+//     apikeys.private_key,
+//     SCOPE
+//   );
+// }
 
-async function uploadBasic() {
-  // Get credentials and build service
-  // TODO (developer) - Use appropriate auth mechanism for your app
+// async function uploadBasic() {
+//   // Get credentials and build service
+//   // TODO (developer) - Use appropriate auth mechanism for your app
 
-  const service = google.drive({
-    version: "v3",
-    auth: "43be80cc078b7efa27eb70f399430ca5a0ba7f7a",
-  });
-  const requestBody = {
-    name: "photo.jpg",
-    fields: "id",
-  };
-  const media = {
-    mimeType: "image/jpeg",
-    body: fs.createReadStream("files/photo.jpg"),
-  };
-  try {
-    const file = await service.files.create({
-      requestBody,
-      media: media,
-    });
-    console.log("File Id:", file.data.id);
-    return file.data.id;
-  } catch (err) {
-    console.error('Error listing files:', err);
-    res.status(500).json({ error: 'Failed to list files' });
-  }
-}
+//   const service = google.drive({
+//     version: "v3",
+//     auth: "43be80cc078b7efa27eb70f399430ca5a0ba7f7a",
+//   });
+//   const requestBody = {
+//     name: "photo.jpg",
+//     fields: "id",
+//   };
+//   const media = {
+//     mimeType: "image/jpeg",
+//     body: fs.createReadStream("files/photo.jpg"),
+//   };
+//   try {
+//     const file = await service.files.create({
+//       requestBody,
+//       media: media,
+//     });
+//     console.log("File Id:", file.data.id);
+//     return file.data.id;
+//   } catch (err) {
+//     console.error('Error listing files:', err);
+//     res.status(500).json({ error: 'Failed to list files' });
+//   }
+// }
 
 assignmentRouter.get("/", async (req, res) => {
   try {
