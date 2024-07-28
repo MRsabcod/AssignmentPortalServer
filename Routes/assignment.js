@@ -203,7 +203,141 @@ assignmentRouter.post("/del/:id", async (req, res) => {
   );
   await Assignment.findByIdAndDelete(req.params.id);
 });
+assignmentRouter.get("/:assignmentId/students", async (req, res) => {
+  try {
+    
+    const { assignmentId } = req.params;
+    const assignment = await Assignment.findById(assignmentId);
+// console.log(assignment)
+    if (!assignment) {
+      return res.status(404).json({ message: "Assignment not found" });
+    }
 
+    const courseId = req.body.courseId;
+    if (!courseId) {
+      return res.status(400).json({ message: "Course ID is required" });
+    }
+    const students = await User.aggregate([
+      { $match: { "courses.ID": courseId } },
+      {
+        $project: {
+          _id: 1,
+          fullName: 1,
+          courses: {
+            $filter: {
+              input: "$courses",
+              as: "course",
+              cond: { $eq: ["$$course.ID", courseId] },
+            },
+          },
+        },
+      },
+    ]);
 
+    const unactiveStudents = students.filter(
+      (student) => student.courses[0].active === false
+    );
+    const activeStudents = students.filter(
+      (student) => student.courses[0].active === true
+    );
+
+    const submittedStudents = await StudentAssignments.aggregate([
+      {
+        $match: {
+          "assignments.assignmentId": assignmentId,
+        },
+      },
+      {
+        $project: {
+          studentId: 1,
+          studentName: 1,
+          assignments: {
+            $filter: {
+              input: "$assignments",
+              as: "assignment",
+              cond: {
+                $eq: ["$$assignment.assignmentId", assignmentId],
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          studentId: 1,
+          studentName: 1,
+          assignments: {
+            courseId: 1,
+            assignmentId: 1,
+            grade: 1,
+          },
+        },
+      },
+    ]);
+
+    const submittedStudentMap = new Map(
+      submittedStudents.map((student) => [student.studentId, student])
+    );
+    console.log(submittedStudentMap.has('66a57131dee443900839fec6'))
+    const { submitted, nonSubmitted } = activeStudents.reduce(
+      (acc, student) => {
+        const studentId = student._id.toHexString();
+        console.log(studentId)
+        if (submittedStudentMap.has(studentId)) {
+          
+          // console.log()
+          const submittedStudent = submittedStudentMap.get(studentId);
+          acc.submitted.push({
+            studentId: studentId,
+            studentName: student.fullName,
+            courses: student.courses,
+            assignments: submittedStudent.assignments,
+          });
+        } else {
+          acc.nonSubmitted.push(student);
+        }
+        return acc;
+      },
+      { submitted: [], nonSubmitted: [] }
+    );
+
+    res.json({ unactiveStudents, submitted, nonSubmitted });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+assignmentRouter.patch("/:assignmentId/toggle-starred", async (req, res) => {
+  const assignmentId = req.params.assignmentId;
+  const studentId = req.body.studentId;
+
+  try {
+    const studentAssignment = await StudentAssignments.findOneAndUpdate(
+      {
+        studentId: studentId,
+        "assignments.assignmentId": assignmentId,
+      },
+      [
+        {
+          $set: {
+            "assignments.$.starred": { $not: "$assignments.starred" },
+          },
+        },
+      ],
+      { new: true }
+    );
+
+    if (!studentAssignment) {
+      return res.status(404).json({ message: "Assignment not found" });
+    }
+
+    res.json({
+      message: "Starred status toggled successfully",
+      studentAssignment,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
 
 export default assignmentRouter;
