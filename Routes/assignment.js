@@ -60,11 +60,19 @@ const {google} = require('googleapis');
 
 assignmentRouter.get("/", async (req, res) => {
   try {
-    const assignments = await Assignment.find({courseId:req.body.courseId},{_id:1,title:1,deadline:1,});
-    
+    const {courseId,studentId}=req.body
+    const assignments = await Assignment.find({courseId},{_id:1,title:1,deadline:1,});
+    let studentAssignments;
+    if(studentId){
+       studentAssignments = await StudentAssignments.find({studentId,assignments:{
+        $elemMatch: { courseId: courseId }
+      }},{assignments:1,_id:0
+        });
+      
+    }
     
 
-    res.json({ assignments });
+    res.json({ assignments,studentAssignments });
   } catch (error) {
     console.error("Error fetching assignment:", error);
     res.status(500).json({ error: "Internal server error" });
