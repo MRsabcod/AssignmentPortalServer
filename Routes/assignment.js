@@ -191,7 +191,7 @@ assignmentRouter.get("/assignment/:id", async (req, res) => {
   }
 });
 
-assignmentRouter.post("/del/:id", async (req, res) => {
+assignmentRouter.delete("/del/:id", async (req, res) => {
   const assignemnt = await Assignment.findById(req.params.id);
 
   gfs.delete(

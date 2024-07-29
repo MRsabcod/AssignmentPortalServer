@@ -102,7 +102,14 @@ studentAssignmentsRouter.get('/studentAssignment/:studentId', async (req, res) =
       }
     }
   ])
-  res.status(200).send(studentAssignment)
+  res.status(200).send({studentAssignment})
+})
+studentAssignmentsRouter.delete('/del/:assignmentId',async(req,res)=>{
+  const assignmentId = req.params.assignmentId
+  const studentId = req.body.studentId
+  const studentAssignments=await StudentAssignments.findOneAndUpdate({studentId},{$pull:{"assignments":{"assignmentId":assignmentId}}})
+await studentAssignments.save()
+  res.status(200).send({studentAssignments})
 })
 studentAssignmentsRouter.post("/grade", async (req, res) => {
   const studentAssignments = await StudentAssignments.findOne({ studentId: req.body.studentId })
