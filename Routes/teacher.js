@@ -68,7 +68,7 @@ teacherRouter.post("/login", async (req, res) => {
   const token = await generateToken(teacher.cnic);
   console.log(token);
 
-  res.send(teacher , { token });
+  res.send({teacher ,  token });
 });
 
 teacherRouter.post("/logout", verifyToken, (req, res) => {

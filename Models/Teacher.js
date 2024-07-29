@@ -16,7 +16,7 @@ const teacherSchema = new mongoose.Schema(
         type: String,
     },
     cnic: {
-      type: Number,
+      type: String,
       required: true,
     },
     

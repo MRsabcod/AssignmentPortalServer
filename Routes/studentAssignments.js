@@ -76,7 +76,7 @@ studentAssignmentsRouter.post("/submit", uploads.array('files', 5), async (req, 
       //   await studentAssignments.assignments.push(studentAssignment)
       // console.log(blob)
 
-      studentAssignments.save()
+      await studentAssignments.save()
       res.send({ studentAssignment:studentAssignments.assignments[existingAssignmentIndex] ,base64String })
     }
   }

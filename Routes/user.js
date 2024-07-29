@@ -76,7 +76,7 @@ userRouter.post('/createPassword', async (req, res) => {
     const { password, cnic, email } = req.body
     const user = await User.findOne({ $or: [{ cnic }, { email }] })
     if (!user) return res.status(400).send({ error: "cnic or email is invalid" })
-    user.encryptPassword(user, password)
+    await user.encryptPassword(user, password)
     // user.password=password
             await user.save()
     res.send({ password: user.password, message: "password created successfully" })
