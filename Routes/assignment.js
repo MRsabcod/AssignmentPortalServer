@@ -121,15 +121,20 @@ assignmentRouter.get("/assignment/:id", async (req, res) => {
 
 assignmentRouter.delete("/del/:id", async (req, res) => {
   const assignemnt = await Assignment.findById(req.params.id);
-
-  gfs.delete(
-    new mongoose.Types.ObjectId(assignemnt.teacherAttachedFile),
+if(assignemnt)
+assignemnt.teacherAttachedFileIds.map(async(id)=>{
+  await gfs.delete(
+    new mongoose.Types.ObjectId(id),
     (err, data) => {
       if (err) return res.status(404).json({ err: err.message });
       res.redirect("/");
     }
-  );
-  await Assignment.findByIdAndDelete(req.params.id);
+  )})
+  const assignmentDelete=await Assignment.findByIdAndDelete(req.params.id);
+  if(!assignmentDelete) 
+  res.status(404).send({msg:"assignment not found",assignemnt})
+else
+  res.status(200).send({msg:"deleted successfully",assignemnt})
 });
 assignmentRouter.get("/:assignmentId/students", async (req, res) => {
   try {
