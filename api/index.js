@@ -4,13 +4,22 @@ import router from '../Routes/index.js';
 import {connectDB} from '../db/index.js';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser'
-
+import path from 'path';
+import { google } from 'googleapis';
+import { Stream } from 'stream';
+import { fileURLToPath } from 'url';
+import multer from 'multer';
+import credentials from './credentials.json'  assert {type:"json"}
 dotenv.config();
 const app=express()
 app.use(cookieParser())
 app.use(express.json())
 app.use(cors({}));
 app.use(express.urlencoded({ extended: false }))
+const upload=multer()
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+//now please load my static html and css files for my express app, from my /dist directory
+app.use(express.static(path.join(__dirname ,'dist')));
 connectDB()
 .then(() => {
 
@@ -19,6 +28,66 @@ connectDB()
     })
 })
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.send(__dirname+'Hello World!')
   })
+  console.log(__dirname)
 app.use('/',router)
+const KEYFILEPATH=path.join(__dirname,'credentials.json')
+const SCOPES=['https://googleapis.com/auth/drive']
+const auth=new google.auth.GoogleAuth({
+    keyFile:KEYFILEPATH,
+    scopes:SCOPES,
+    
+})
+var jwtClient = new google.auth.JWT(
+    credentials.client_email,
+    null,
+    credentials.private_key,
+    ['https://www.googleapis.com/auth/drive']
+  );
+  jwtClient.authorize(function (err, tokens) {
+    if (err) {
+      return;
+    } else {
+      console.log("Google autorization complete");
+    }
+  });
+console.log(jwtClient)
+const uploadFile=async(fileObject)=>{
+    console.log(fileObject)
+    const bufferStream=new Stream.PassThrough()
+    bufferStream.end(fileObject.buffer)
+    // console.log(bufferStream)
+    const {data}=await google.drive({
+        version: 'v3',
+        auth:jwtClient
+    }
+    
+).files.create({
+    media:{
+        mimeType:fileObject.mimetype,
+        body:bufferStream
+    },
+    requestBody:{
+        name:fileObject.originalname,
+        parents:['1NgGBYwVYQgOL6mJAJFAVevISWPr_K0Pf']
+    },
+    fields:"id,name"
+})
+// console.log(data)
+console.log(`uploaded file ${data.name} ${data.id}`)
+
+}
+app.post('/upload',upload.any(),async(req,res)=>{
+   try{ const {body,files}=req
+//    console.log(files,body
+//    )
+    for (let f = 0; f < files.length; f++) {
+    const fileup=await uploadFile(files[f]);
+    }
+    // console.log(body)
+    res.status(200).send('uploaded')}
+    catch(f){
+        res.send(f.message)
+    }
+})

@@ -13,7 +13,7 @@ const assignemntSchema=new Schema({
         },
         desc:{  
             type:String,
-            required:true},
+            },
 
             teacherAttachedFileIds:[{
                 type:String,

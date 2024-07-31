@@ -35,8 +35,18 @@ assignmentRouter.get("/", async (req, res) => {
 
   // res.pipe(assignments)
 });
-
-assignmentRouter.post(
+assignmentRouter.patch('/edit/:id',uploads.array('files',5),async(req,res)=>{
+  const {id}=req.params
+  const fileNames = req.files
+      .filter((file) => file.size <= 1000)
+      .map((file) => file.id)
+  const {title,deadline,desc}=req.body
+const assignemntUpdate=  await Assignment.findByIdAndUpdate(id,{title,deadline,desc,teacherAttachedFileIds:fileNames},{new:true})
+if(!assignemntUpdate)
+  res.status(404).json({error:"Assignment not found"})
+res.json(assignemntUpdate)
+})
+  assignmentRouter.post(
   "/upload",
   uploads.array("files", 5),
 
