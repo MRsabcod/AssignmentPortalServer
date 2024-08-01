@@ -7,6 +7,10 @@ const assignemntSchema=new Schema({
         type:String,
         required:true
         },
+        maxMarks:{
+            type:Number,
+            default:100
+        },
         deadline:{
             required:true,
             type:Date,

@@ -48,7 +48,11 @@ const studentAssignemntSchema=new Schema({
     totalPercentage:{
         type:Number,
         default : 0,
-    }
+    },
+    totalGrade:{
+        type:Number,
+        default : 0,
+        },
 
 })
 const StudentAssignments=mongoose.model('StudentsAssignments',studentAssignemntSchema)

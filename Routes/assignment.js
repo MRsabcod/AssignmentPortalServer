@@ -13,9 +13,10 @@ const assignmentRouter = express.Router();
 
 
 
-assignmentRouter.get("/", async (req, res) => {
+assignmentRouter.get("/:courseId", async (req, res) => {
   try {
-    const {courseId,studentId}=req.body
+    const {studentId}=req.body
+    const {courseId}=req.params
     const assignments = await Assignment.find({courseId},{_id:1,title:1,deadline:1,});
     let studentAssignments;
     if(studentId){
@@ -56,7 +57,7 @@ res.json(assignemntUpdate)
      fileNames = req.files
       .filter((file) => file.size <= 1000)
       .map((file) => file.id);}
-    const { title, desc, courseId, deadline } = req.body;
+    const { title, desc, courseId, deadline,maxMarks } = req.body;
     console.log(fileNames);
     
       const assignment = await Assignment.create({
@@ -65,6 +66,7 @@ res.json(assignemntUpdate)
         courseId,
         deadline,
         teacherAttachedFileIds: fileNames,
+        maxMarks
       });
       const createdAssignment = await Assignment.findById(
         assignment._id
