@@ -72,10 +72,10 @@ const uploadFile=async(fileObject)=>{
         name:fileObject.originalname,
         parents:['1NgGBYwVYQgOL6mJAJFAVevISWPr_K0Pf']
     },
-    fields:"id,name"
+    fields:"id,name,webViewLink,webContentLink"
 })
 // console.log(data)
-console.log(`uploaded file ${data.name} ${data.id}`)
+console.log(`uploaded file ${data.name} ${data.id} ${data.webViewLink} ${data.webContentLink}  `)
 
 }
 app.post('/upload',upload.any(),async(req,res)=>{
