@@ -9,7 +9,7 @@ import { google } from 'googleapis';
 import { Stream } from 'stream';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
-import credentials from './credentials.json'  assert {type:"json"}
+// import credentials from './credentials.json'  assert {type:"json"}
 dotenv.config();
 const app=express()
 app.use(cookieParser())
@@ -39,10 +39,11 @@ const auth=new google.auth.GoogleAuth({
     scopes:SCOPES,
     
 })
+const serviceAccount = JSON.parse(process.env.CRED);
 var jwtClient = new google.auth.JWT(
-    process.env.client_email,
+    serviceAccount.client_email,
     null,
-    process.env.private_key,
+    serviceAccount.private_key,
     ['https://www.googleapis.com/auth/drive']
   );
   jwtClient.authorize(function (err, tokens) {
