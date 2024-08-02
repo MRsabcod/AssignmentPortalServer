@@ -40,9 +40,9 @@ const auth=new google.auth.GoogleAuth({
     
 })
 var jwtClient = new google.auth.JWT(
-    credentials.client_email,
+    process.env.client_email,
     null,
-    credentials.private_key,
+    process.env.private_key,
     ['https://www.googleapis.com/auth/drive']
   );
   jwtClient.authorize(function (err, tokens) {
