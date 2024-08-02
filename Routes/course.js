@@ -6,5 +6,4 @@ courseRouter.get('/:id',async(req,res)=>{
     const courses=await Course.findById(req.params.id)
     res.send({courses})
 })
-
 export default courseRouter
