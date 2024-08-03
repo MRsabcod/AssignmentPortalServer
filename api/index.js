@@ -31,19 +31,4 @@ app.get('/', (req, res) => {
   })
 
 app.use('/',router)
-
-app.post('/upload',upload.any(),async(req,res)=>{
-   try{ const {body,files}=req
-//    console.log(files,body
-//    )
-let fileup;
-    for (let f = 0; f < files.length; f++) {
-     fileup=await uploadFile(files[f]);
-    }
-    // console.log(body)
-    res.status(200).send({up:'uploaded',fileup})}
-    catch(f){
-        res.send(f.message)
-    }
-})
-
+const serviceAccount = JSON?.parse(process.env.CRED);

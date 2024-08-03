@@ -1,4 +1,5 @@
-const serviceAccount = JSON?.parse(process.env.CRED);
+import { google } from "googleapis";
+const serviceAccount = JSON?.parse(process.env.CRED!=undefined?process.env.CRED:"{}")
 var jwtClient = new google.auth.JWT(
     serviceAccount.client_email,
     null,
