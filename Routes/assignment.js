@@ -7,11 +7,11 @@ import fs, { ReadStream } from "fs";
 // import apikeys from "../utils/apikey.json" 
 import { google } from "googleapis";
 import { uploads } from "../middlewares/assignment.js";
-import { uploadFile} from '../api/index.js'
 import { gfs } from "../db/index.js";
 import mongoose from "mongoose";
 import User from "../Models/User.js";
 import multer from "multer";
+import uploadFile from "../utils/googleDrive.js";
 const assignmentRouter = express.Router();
 
 const upload = multer()
