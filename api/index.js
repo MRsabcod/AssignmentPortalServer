@@ -45,7 +45,7 @@ var jwtClient = new google.auth.JWT(
       console.log("Google autorization complete");
     }
   });
-console.log(jwtClient)
+// console.log(jwtClient)
 export const uploadFile=async(fileObject)=>{
     console.log(fileObject)
     const bufferStream=new Stream.PassThrough()
