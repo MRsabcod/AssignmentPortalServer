@@ -1,4 +1,5 @@
 import { google } from "googleapis";
+import { Stream } from 'stream';
 const serviceAccount = JSON?.parse(process.env.CRED!=undefined?process.env.CRED:"{}")
 var jwtClient = new google.auth.JWT(
     serviceAccount.client_email,
