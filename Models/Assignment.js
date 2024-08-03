@@ -19,16 +19,13 @@ const assignemntSchema=new Schema({
             type:String,
             },
 
-            teacherAttachedFileIds:[{
+            teacherAttachedFileLinks:[{
                 type:String,
             }],
             teacherAttachedLink:{
                 type:String,
             },
-            teacherAttachedFile:[{
-                type:String,
-
-            }],
+          
             courseId:{
                 type:String,
             }

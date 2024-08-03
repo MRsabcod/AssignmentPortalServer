@@ -92,9 +92,10 @@ userRouter.post('/login', async (req, res) => {
     const isMatch = await user.isCorrectPassword(password)
     if (!isMatch) return res.status(400).send({ error: "password is incorrect" })
     const { token } = await generateToken(user._id)
+const rollNo=user?.courses?.rollNo
     console.log(token)
 
-    res.send({ user, token })
+    res.send({ user, token,rollNo })
     // console.log(res.header('set-cookie'))
 })
 

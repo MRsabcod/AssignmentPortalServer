@@ -31,7 +31,7 @@ const studentAssignemntSchema=new Schema({
                 studentAttachedFileContentType:{
                     type:String,
                 },
-                studentAttachedFileIds:[{
+                studentAttachedFileLinks:[{
                     type:String,
                 }],
                 grade:{

@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
   })
 
 app.use('/',router)
-const serviceAccount = JSON.parse(process.env.CRED);
+const serviceAccount = JSON?.parse(process.env.CRED);
 var jwtClient = new google.auth.JWT(
     serviceAccount.client_email,
     null,

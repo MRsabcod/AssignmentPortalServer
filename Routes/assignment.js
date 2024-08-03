@@ -58,23 +58,30 @@ assignmentRouter.post(
 
   async (req, res) => {
     
-    try{ const {body,files}=req
+    try{ 
+      const {body,files}=req
     const { title, desc, courseId, deadline,maxMarks } = body;
+    let fileNames=[];
+    for (let f = 0; f < files.length; f++) {
+      fileNames.push(await uploadFile(files[f]))
+    }
+    // console.log(body)
+    
     const assignment = await Assignment.create({
           title,
           desc,
           courseId,
           deadline,
-          teacherAttachedFileIds: fileNames,
+          teacherAttachedFileLinks: fileNames,
           maxMarks
         });
-  
-    let fileup=[];
-        for (let f = 0; f < files.length; f++) {
-         fileup.push(await uploadFile(files[f]))
-        }
-        // console.log(body)
-        res.status(200).send({up:'uploaded',fileup})}
+        const createdAssignment = await Assignment.findById(
+              assignment._id
+            ).select("-courseId");
+            if (!createdAssignment)
+              return res.status(400).send({ error: "Something went wrong" });
+          return res.status(200).send({ assignment: createdAssignment });
+   }
         catch(f){
             res.send(f.message)
         }
@@ -83,12 +90,7 @@ assignmentRouter.post(
     // console.log(fileNames);
 
       
-    //   const createdAssignment = await Assignment.findById(
-    //     assignment._id
-    //   ).select("-courseId");
-    //   if (!createdAssignment)
-    //     return res.status(400).send({ error: "Something went wrong" });
-    // return res.status(200).send({ assignment: "createdAssignment" });
+  
   }
 
 );
