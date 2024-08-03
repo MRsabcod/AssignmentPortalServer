@@ -84,7 +84,7 @@ assignmentRouter.post(
           return res.status(200).send({ assignment: createdAssignment });
    }
         catch(f){
-            res.send(f.message)
+            res.send({msg:f.message,s:"ss"})
         }
 
     // 
