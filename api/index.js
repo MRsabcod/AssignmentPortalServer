@@ -47,7 +47,7 @@ var jwtClient = new google.auth.JWT(
   });
 // console.log(jwtClient)
 
-export default async function uploadFile (fileObject){
+export async function uploadFile (fileObject){
     console.log(fileObject)
     const bufferStream=new Stream.PassThrough()
     bufferStream.end(fileObject.buffer)
