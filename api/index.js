@@ -18,7 +18,6 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(cors({}));
 app.use(express.urlencoded({ extended: false }))
-export const serviceAccount = JSON?.parse(process.env.CRED);
 
 connectDB()
 .then(() => {
