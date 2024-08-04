@@ -1,7 +1,9 @@
 import { google } from "googleapis";
 import { Stream } from 'stream';
+import dotenv from 'dotenv'
+dotenv.config();
 // import {serviceAccount} from '../api/index.js'
-// console.log(process.env.PORT)
+console.log(process.env.PORT)
 const serviceAccount =  JSON.parse(process.env.CRED)
 var jwtClient = new google.auth.JWT(
     serviceAccount.client_email,
@@ -19,7 +21,7 @@ var jwtClient = new google.auth.JWT(
 // console.log(jwtClient)
 
 async function uploadFile (fileObject){
-    console.log(fileObject)
+    // console.log(fileObject)
     const bufferStream=new Stream.PassThrough()
     bufferStream.end(fileObject.buffer)
     // console.log(bufferStream)

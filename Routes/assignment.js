@@ -64,16 +64,17 @@ assignmentRouter.post(
     const { title, desc, courseId, deadline,maxMarks } = body;
     let fileNames=[];
     for (let f = 0; f < files.length; f++) {
+      console.log(await uploadFile(files[f]))
       fileNames.push(await uploadFile(files[f]))
     }
-    // console.log(body)
+    
     
     const assignment = await Assignment.create({
           title,
           desc,
           courseId,
           deadline,
-          teacherAttachedFileLinks: fileNames,
+          teacherAttachedFileLinks:  fileNames,
           maxMarks
         });
         const createdAssignment = await Assignment.findById(
@@ -84,7 +85,7 @@ assignmentRouter.post(
           return res.status(200).send({ assignment: createdAssignment });
    }
         catch(f){
-            res.send({msg:f.message,s:"ss"})
+            res.send(f.message)
         }
 
     // 
