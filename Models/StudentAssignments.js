@@ -10,56 +10,51 @@ const studentAssignemntSchema = new Schema({
 
 
     courses: [{
-        course: {
-            courseId:{type:String},
-            courseName:{type:String},
 
-            courseAssignments:{
-                type:[
-                    {
-                        courseId:{
-                            type:String,
-                        },
-                        assignmentId:{
-                            type:String,
-                        },
-                        starred: {
-                            type: Boolean,
-                            default: false
-                        },
-                        studentAttachedLink:{
-                            type:String,
-                        },
-                        studentAttachedFile:{
-                            type:String,
-                        },
-                        studentAttachedFileContentType:{
-                            type:String,
-                        },
-                        studentAttachedFileLinks:[{
-                            type:String,
-                        }],
-                        grade:{
-                            type:Number,
-                            default:-1,
-                            max:100
-                            
-                        }
-        
+        courseId: { type: String },
+        courseName: { type: String },
+        totalPercentage: {
+            type: Number,
+            default: 0,
+        },
+        totalPoints: {
+            type: Number,
+            default: 0,
+        },
+        courseAssignments:
+            [
+                {
+
+                    assignmentId: {
+                        type: String,
+                    },
+                    starred: {
+                        type: Boolean,
+                        default: false
+                    },
+                    studentAttachedLinks: {
+                        type: String,
+                    },
+                   
+                  
+                    studentAttachedFileLinks: [{
+                        
+                    }],
+                    grade: {
+                        type: Number,
+                        default: -1,
+
+
                     }
-                ],
-        
-            },
-        }
+
+                }
+            ],
+
+
+
     }],
-    totalPercentage: {
-        type: Number,
-        default: 0,
-    },
-    totalGrade: {
-        type: Number,
-        default: 0,
-    },
+    
+ 
 
 })
 const StudentAssignments = mongoose.model('StudentsAssignments', studentAssignemntSchema)

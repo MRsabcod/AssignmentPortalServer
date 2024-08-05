@@ -2,7 +2,7 @@ import express from 'express'
 import User from '../Models/User.js'
 
 import fs from 'fs'
-import { upload } from '../middlewares/multer.js'
+
 // import { verify } from 'jsonwebtoken'
 import verifyToken from '../middlewares/user.js'
 import uploadOnCloudinary from '../utils/cloudinary.js'
@@ -33,7 +33,7 @@ userRouter.get('/', async (req, res) => {
     const users = await User.find()
     res.send({ data: users, message: "FETCH SUCCESSFULLY" })
 })
-userRouter.post('/register', upload.fields([{ name: "avatar", maxCount: 1 }]), async (req, res) => {
+userRouter.post('/register', async (req, res) => {
     const { email, fullName, cnic, contact,courses } = req.body
     const password = Math.random(9)
     //    console.log(req.files?.avatar[0]?.path)
@@ -62,11 +62,14 @@ userRouter.post('/register', upload.fields([{ name: "avatar", maxCount: 1 }]), a
         courses
     });
     const createdUser = await User.findById(user._id).select("-refreshToken");
+    const courseIds=createdUser.courses?.map((course)=>{return {courseId:course.ID}})
     if (!createdUser) return res.send({ error: 'user not created' })
     const createdStudentAssignments = await StudentAssignments.create({
         studentId: createdUser._id,
-        studentName: createdUser.fullName
+        studentName: createdUser.fullName,
+    courses:courseIds
     })
+    
     if (!createdStudentAssignments) return res.send({ error: 'userAssignmentPortal not created' })
 
     res.status(200).send({ createdUser, message: "REGISTER SUCCESSFULLY", createdStudentAssignments })
@@ -92,10 +95,10 @@ userRouter.post('/login', async (req, res) => {
     const isMatch = await user.isCorrectPassword(password)
     if (!isMatch) return res.status(400).send({ error: "password is incorrect" })
     const { token } = await generateToken(user._id)
-const rollNo=user?.courses?.rollNo
+
     console.log(token)
 
-    res.send({ user, token,rollNo })
+    res.send({ user, token })
     // console.log(res.header('set-cookie'))
 })
 
