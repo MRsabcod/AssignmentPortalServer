@@ -92,19 +92,10 @@ studentAssignmentsRouter.delete('/del/:assignmentId',async(req,res)=>{
   const assignmentId = req.params.assignmentId
   const studentId = req.body.studentId
   const studentAssignment=await StudentAssignments.findOne({studentId},{assignments:{$elemMatch:{assignmentId}}})
-  const studentAssignmentIds=(studentAssignment.assignments[0].studentAttachedFileIds)
 
   if(assignmentId && studentId){
   await StudentAssignments.findOneAndUpdate({studentId},{$pull:{"assignments":{"assignmentId":assignmentId}}})
-  studentAssignmentIds.map((id)=>{
-    
-    gfs.delete(
-      new mongoose.Types.ObjectId(id),
-      (err, data) => {
-        if (err) return res.status(404).json({ err: err.message });
-       console.log(data);
-      })
-  })
+  
 }
 
   res.status(200).send({msg:"sucessfully deleted",studentAssignment})

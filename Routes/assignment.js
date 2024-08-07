@@ -15,7 +15,14 @@ import uploadFile from "../utils/googleDrive.js";
 const assignmentRouter = express.Router();
 
 const upload = multer()
-
+const AssignmentuploadFile=async(files)=>{
+  let fileNames=[];
+    for (let f = 0; f < files.length; f++) {
+     
+      fileNames.push(await uploadFile(files[f]))
+    }
+    return fileNames
+}
 assignmentRouter.get("/:courseId", async (req, res) => {
   try {
     const { studentId } = req.body
@@ -42,16 +49,22 @@ assignmentRouter.get("/:courseId", async (req, res) => {
 
   // res.pipe(assignments)
 });
-assignmentRouter.patch('/edit/:id', uploads.array('files', 5), async (req, res) => {
-  const { id } = req.params
-  const fileNames = req.files
-    .filter((file) => file.size <= 1000)
-    .map((file) => file.id)
+assignmentRouter.patch('/edit/:id', upload.any(), async (req, res) => {
+ 
+  try {
+
+  const fileNames=await AssignmentuploadFile(req.files)
+
+   
   const { title, deadline, desc } = req.body
-  const assignemntUpdate = await Assignment.findByIdAndUpdate(id, { title, deadline, desc, teacherAttachedFileIds: fileNames }, { new: true })
+  const assignemntUpdate = await Assignment.findByIdAndUpdate(req.params.id, { title, deadline, desc, teacherAttachedFileLinks: fileNames }, { new: true })
   if (!assignemntUpdate)
     res.status(404).json({ error: "Assignment not found" })
   res.json(assignemntUpdate)
+}
+  catch (error) {
+    console.error("Error updating assignment:", error);
+  }
 })
 assignmentRouter.post(
   "/upload",
@@ -62,12 +75,8 @@ assignmentRouter.post(
     try{ 
       const {body,files}=req
     const { title, desc, courseId, deadline,maxMarks } = body;
-    let fileNames=[];
-    for (let f = 0; f < files.length; f++) {
-      console.log(await uploadFile(files[f]))
-      fileNames.push(await uploadFile(files[f]))
-    }
     
+    const fileNames=await AssignmentuploadFile(files)
     
     const assignment = await Assignment.create({
           title,
@@ -153,21 +162,13 @@ assignmentRouter.get("/assignment/:id", async (req, res) => {
 assignmentRouter.delete("/del/:id", async (req, res) => {
   const assignemnt = await Assignment.findById(req.params.id);
   if (assignemnt)
-    assignemnt.teacherAttachedFileIds.map(async (id) => {
-      await gfs.delete(
-        new mongoose.Types.ObjectId(id),
-        (err, data) => {
-          if (err) return res.status(404).json({ err: err.message });
-          res.redirect("/");
-        }
-      )
-    })
+  {
   const assignmentDelete = await Assignment.findByIdAndDelete(req.params.id);
   if (!assignmentDelete)
     res.status(404).send({ msg: "assignment not found", assignemnt })
   else
     res.status(200).send({ msg: "deleted successfully", assignemnt })
-});
+}});
 assignmentRouter.get("/:assignmentId/students", async (req, res) => {
   try {
 
