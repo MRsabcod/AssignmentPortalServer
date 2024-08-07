@@ -91,14 +91,14 @@ studentAssignmentsRouter.patch('/edit/:id',async (req,res)=>{
 studentAssignmentsRouter.delete('/del/:assignmentId',async(req,res)=>{
   const assignmentId = req.params.assignmentId
   const studentId = req.body.studentId
-  const studentAssignment=await StudentAssignments.findOne({studentId},{assignments:{$elemMatch:{assignmentId}}})
+
 
   if(assignmentId && studentId){
   await StudentAssignments.findOneAndUpdate({studentId},{$pull:{"assignments":{"assignmentId":assignmentId}}})
   
+  res.status(200).send({msg:"sucessfully deleted"})
 }
 
-  res.status(200).send({msg:"sucessfully deleted",studentAssignment})
 })
 studentAssignmentsRouter.post("/grade", async (req, res) => {
   const studentAssignments = await StudentAssignments.findOne({ studentId: req.body.studentId })

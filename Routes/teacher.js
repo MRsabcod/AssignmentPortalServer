@@ -1,13 +1,12 @@
 import express from "express";
-import bcrypt from 'bcryptjs'
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import verifyToken from "../middlewares/user.js";
 import Teacher from "../Models/Teacher.js";
 import User from "../Models/User.js";
-import Assignment from "../Models/Assignment.js";
-import StudentAssignments from "../Models/StudentAssignments.js";
 
 const teacherRouter = express.Router();
+
 const generateToken = async (cnic) => {
   try {
     const teacher = await Teacher.findOne({ cnic });
@@ -21,10 +20,8 @@ const generateToken = async (cnic) => {
         expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
       }
     );
-
     teacher.refreshToken = token;
     await teacher.save({ validateBeforeSave: false });
-
     return token;
   } catch (error) {
     console.log(error);
@@ -32,9 +29,8 @@ const generateToken = async (cnic) => {
 };
 
 teacherRouter.post("/register", async (req, res) => {
-  const { email, fullName, cnic, contact,courses } = req.body;
-const password=Math.random(9)
-
+  const { email, fullName, cnic, contact, courses } = req.body;
+  const password = Math.random(9);
   const existedTeacher = await Teacher.findOne({
     $or: [{ cnic }, { email }],
   });
@@ -47,7 +43,7 @@ const password=Math.random(9)
     password,
     email,
     contact,
-    courses
+    courses,
   });
   const createdTeacher = await Teacher.findById(teacher._id).select(
     "-password -refreshToken"
@@ -67,23 +63,7 @@ teacherRouter.post("/login", async (req, res) => {
   if (!isMatch) return res.status(400).send({ error: "password is incorrect" });
   const token = await generateToken(teacher.cnic);
   console.log(token);
-
-  res.send({teacher ,  token });
-});
-
-teacherRouter.post("/logout", verifyToken, (req, res) => {
-  console.log(req.user.refreshToken[0]);
-  Teacher.findById(
-    req.teacher._id,
-    {
-      $pull: { refreshToken: req.teacher.refreshToken[0] },
-    },
-    {
-      new: true,
-    }
-  );
-  res.clearCookie("accessToken");
-  res.status(200).send({ msg: "done" });
+  res.send({ teacher, token });
 });
 
 teacherRouter.post("/createPassword", async (req, res) => {
@@ -139,9 +119,8 @@ teacherRouter.patch("/:courseId/toggle-active", async (req, res) => {
 
     res.status(200).json({ message: "Course active status toggled", course });
   } catch (error) {
-    res.status(500).json({ message: "An error occurred", error });
-  }
+    res.status(500).json({ message: "An error occurred", error });
+  }
 });
-
 
 export default teacherRouter;
