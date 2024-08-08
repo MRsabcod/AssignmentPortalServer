@@ -19,7 +19,7 @@ courseRouter.get("/leaderboard/:courseId", async (req, res) => {
       return {
         studentId: stud.studentId,
         studentName: stud.studentName,
-        totalPercentage: courses[0].totalPercentage,
+        totalPercentage: stud.courses[0].totalPercentage,
       };
     });
     res.json(leaderboard);
