@@ -12,6 +12,10 @@ const studentAssignemntSchema = new Schema({
       courseId: {
         type: String,
       },
+      maxPossibelScore:{
+
+        type:Number
+      },
       totalPercentage: {
         type: Number,
         default: 0,

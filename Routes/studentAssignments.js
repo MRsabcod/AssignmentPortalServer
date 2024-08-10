@@ -44,15 +44,19 @@ studentAssignmentsRouter.post("/submit", upload.any(), async (req, res) => {
      $push:{'courses.$.courseAssignments':newStudentAssignment}
       },
       { new: true, useFindAndModify: false }
-    );
+    )
+    const course = studentAssignment.courses.find(course => course.courseId === req.body.courseId);
   //  if(!studentAssignment)
+  const submittedAssignment = course.courseAssignments.find(
+    (assignment) => assignment.assignmentId === req.body.assignmentId
+  );
   //   res.send({"msg":"assignment was not created "})
-  res.send({studentAssignment})
+  res.send({submittedAssignment})
    
   }
   catch (e) {
     console.error('Error fetching assignment:', e);
-    res.status(500).send({ error: 'Internal server error' });
+    res.status(500).send({ error: 'Internal server error',e });
   }
 })
 studentAssignmentsRouter.get('/studentAssignment/:studentId', async (req, res) => {
@@ -133,10 +137,13 @@ res.status(404).send('not found')
 studentAssignmentsRouter.post("/grade", async (req, res) => {
   const studentAssignments = await StudentAssignments.findOne({ studentId: req.body.studentId })
   if (studentAssignments)
-    studentAssignments.assignments.forEach(element => {
-      if (element.assignmentId == req.body.assignmentId) {
+    studentAssignments.courses.forEach(course => {
+      course.courseAssignments?.forEach(element => {
+        if (element.assignmentId == req.body.assignmentId) {
+          console.log(element.assignmentId)
         element.grade = req.body.grade
       }
+      });
     });
   await studentAssignments?.save()
   res.send({ studentAssignments })
