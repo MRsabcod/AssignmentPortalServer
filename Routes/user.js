@@ -76,10 +76,10 @@ userRouter.post('/login', async (req, res) => {
     const isMatch = await user.isCorrectPassword(password)
     if (!isMatch) return res.status(400).send({ error: "password is incorrect" })
     const { token } = await generateToken(user._id)
-const courses=await Promise.all(user.courses.map(async(course)=>{return await Course.findById(course.ID)}))
+const coursesDetails=await Promise.all(user.courses.map(async(course)=>{return await Course.findById(course.ID)}))
 
     // console.log(token)
-    res.send({ user, token,courses })
+    res.send({ user, token,coursesDetails })
 })
 
 userRouter.post('/updatePassword', async (req, res) => {

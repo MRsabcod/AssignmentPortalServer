@@ -21,30 +21,45 @@ const AssignmentuploadFile=async(files)=>{
 }
 assignmentRouter.get("/:courseId", async (req, res) => {
   try {
-    const { studentId } = req.body;
+    const { studentId } = req.body;  // Assuming studentId is sent in the request body
     const { courseId } = req.params;
+  
+    // Fetch the assignments related to the course
     const assignments = await Assignment.find(
       { courseId },
       { _id: 1, title: 1, deadline: 1 }
     );
-    let studentAssignments;
-    if (studentId) {
-      studentAssignments = await StudentAssignments.findOne(
-        {
-          studentId,
-          courses: {
-            $elemMatch: { courseId: courseId },
-          },
+  
+    // Fetch the student's assignments for the specific course
+    const studentAssignments = await StudentAssignments.findOne(
+      {
+        studentId: studentId,  // Ensure it's the specific student
+        courses: {
+          $elemMatch: { courseId: courseId },
         },
-        {
-          courses: 1,
-          _id: 0,
-        }
-      );
+      },
+      {
+        courses: 1,
+        _id: 0,
+      }
+    );
+  
+    // Check if studentAssignments exists and find the courseAssignments if so
+    let courseAssignments = null;
+    if (studentAssignments) {
+      const courseData = studentAssignments.courses.find(course => course.courseId === courseId);
+      if (courseData) {
+        courseAssignments = courseData.courseAssignments;
+      }
     }
-    const {courseAssignments} = studentAssignments.courses.find(course => course.courseId === courseId);
-    const matchAssignments= assignments?.map((studAssignment)=>courseAssignments.find((assignment)=>{assignment.assignmentId!==studAssignment._id.toString()} ))
-    res.json({ assignments, courseAssignments,matchAssignments });
+  
+    // If courseAssignments are found, return them along with the assignments
+    if (courseAssignments) {
+      res.json({ assignments, courseAssignments });
+    } else {
+      // If no student assignments, return only the assignments
+      res.json({ assignments });
+    }
   } catch (error) {
     console.error("Error fetching assignment:", error);
     res.status(500).json({ error: "Internal server error" });
