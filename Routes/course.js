@@ -5,8 +5,18 @@ import Assignment from "../Models/Assignment.js";
 const courseRouter = express.Router();
 
 courseRouter.get("/:id", async (req, res) => {
-  const courses = await Course.findById(req.params.id);
-  res.send({ courses });
+  const ids=[
+    "668faa0e003a8efa3114ee6e",
+    "668fa9d2003a8efa3114ee6c"
+  ]
+  const courselist=[]
+  const courses = await Promise.all(
+    ids.map(async (id) => {
+      const course = await Course.findById(id);
+      return course;
+    })
+  );
+  res.send({ courses });  
 });
 courseRouter.post('/assignTotalPercentage',async(req,res)=>{
   try {

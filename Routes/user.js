@@ -2,6 +2,7 @@ import express from 'express'
 import User from '../Models/User.js'
 import verifyToken from '../middlewares/user.js'
 import StudentAssignments from '../Models/StudentAssignments.js'
+import Course from '../Models/Course.js'
 
 const userRouter = express.Router()
 
@@ -48,6 +49,7 @@ userRouter.post('/register', async (req, res) => {
     courses:courseIds
     })
     
+    
     if (!createdStudentAssignments) return res.send({ error: 'userAssignmentPortal not created' })
 
     res.status(200).send({ createdUser, message: "REGISTER SUCCESSFULLY", createdStudentAssignments })
@@ -74,9 +76,10 @@ userRouter.post('/login', async (req, res) => {
     const isMatch = await user.isCorrectPassword(password)
     if (!isMatch) return res.status(400).send({ error: "password is incorrect" })
     const { token } = await generateToken(user._id)
+const courses=await Promise.all(user.courses.map(async(course)=>{return await Course.findById(course.ID)}))
 
-    console.log(token)
-    res.send({ user, token })
+    // console.log(token)
+    res.send({ user, token,courses })
 })
 
 userRouter.post('/updatePassword', async (req, res) => {
