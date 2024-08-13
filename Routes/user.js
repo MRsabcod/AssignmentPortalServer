@@ -69,7 +69,7 @@ userRouter.post('/login', async (req, res) => {
     if (!(cnic || email)) {
         return res.status(400).send({ error: "username or email is required" })
     }
-    const user = await User.findOne({ $or: [{ cnic }, { email }], password: { $exists: true } })
+    const user = await User.findOne({ $and: [{ cnic }, { email }], password: { $exists: true } })
     if (!user) return res.status(400).send({ error: "username or email is not registered" })
     const isMatch = await user.isCorrectPassword(password)
     if (!isMatch) return res.status(400).send({ error: "password is incorrect" })

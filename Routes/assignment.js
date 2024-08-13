@@ -29,7 +29,7 @@ assignmentRouter.get("/:courseId", async (req, res) => {
     );
     let studentAssignments;
     if (studentId) {
-      studentAssignments = await StudentAssignments.find(
+      studentAssignments = await StudentAssignments.findOne(
         {
           studentId,
           courses: {
@@ -42,7 +42,9 @@ assignmentRouter.get("/:courseId", async (req, res) => {
         }
       );
     }
-    res.json({ assignments, studentAssignments });
+    const {courseAssignments} = studentAssignments.courses.find(course => course.courseId === courseId);
+    const matchAssignments= assignments?.map((studAssignment)=>courseAssignments.find((assignment)=>{assignment.assignmentId!==studAssignment._id.toString()} ))
+    res.json({ assignments, courseAssignments,matchAssignments });
   } catch (error) {
     console.error("Error fetching assignment:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -204,10 +206,13 @@ assignmentRouter.get("/:assignmentId/students", async (req, res) => {
     const submittedStudentMap = new Map(
       submittedStudents.map((student) => [student.studentId, student])
     );
+    console.log(submittedStudentMap)
+    const now = new Date()
     const { submitted, nonSubmitted } = activeStudents.reduce(
       (acc, student) => {
         const studentId = student._id.toHexString();
-        if (submittedStudentMap.has(studentId)) {
+        console.log(studentId)
+        if (submittedStudentMap.has(studentId) ) {
           const submittedStudent = submittedStudentMap.get(studentId);
           acc.submitted.push({
             studentId: studentId,
@@ -215,9 +220,12 @@ assignmentRouter.get("/:assignmentId/students", async (req, res) => {
             courses: student.courses,
             assignments: submittedStudent.assignmentId,
           });
-        } else {
-          acc.nonSubmitted.push(student);
         }
+        
+         else {
+            acc.nonSubmitted.push(student);
+          }
+        
         return acc;
       },
       { submitted: [], nonSubmitted: [] }

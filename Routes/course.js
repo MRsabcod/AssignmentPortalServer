@@ -38,9 +38,9 @@ courseRouter.post('/assignTotalPercentage',async(req,res)=>{
         // Save the updated student assignments
         await studentAssignments.save();
     }
-
     console.log("Total percentage calculated and updated for all students.");
-} catch (error) {
+res.send("Total percentage calculated and updated for all students.")
+  } catch (error) {
     console.error("Error calculating total percentage for all students: ", error);
 }
 })
