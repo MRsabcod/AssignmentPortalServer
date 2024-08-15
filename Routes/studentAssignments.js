@@ -8,6 +8,7 @@ import uploadFile from '../utils/googleDrive.js'
 import { ideahub_v1alpha } from 'googleapis'
 import Assignment from '../Models/Assignment.js'
 import User from '../Models/User.js'
+import cron from 'node-cron';
 const AssignmentuploadFile = async (files) => {
   let fileNames = [];
   for (let f = 0; f < files.length; f++) {
@@ -16,6 +17,35 @@ const AssignmentuploadFile = async (files) => {
   }
   return fileNames
 }
+cron.schedule('0 0 * * *', async () => {
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+  try {
+    // Fetch assignments with deadlines older than one week
+    const outdatedAssignments = await Assignment.find({
+      deadline: { $lt: oneWeekAgo }
+    }).select('_id');
+
+    const outdatedAssignmentIds = outdatedAssignments.map(assignment => assignment._id.toString());
+
+    // Remove outdated assignments from StudentAssignments
+    const updated = await StudentAssignments.updateMany(
+      {},
+      {
+        $pull: {
+          'courses.$[].courseAssignments': {
+            assignmentId: { $in: outdatedAssignmentIds }
+          }
+        }
+      }
+    );
+
+    console.log(`${updated.nModified} documents updated, outdated assignments removed.`);
+  } catch (error) {
+    console.error('Error removing outdated assignments:', error);
+  }
+});
 const studentAssignmentsRouter = express.Router()
 studentAssignmentsRouter.get("/:studentId/assignments", async (req, res) => {
   try {
@@ -143,6 +173,9 @@ studentAssignmentsRouter.get('/studentAssignment/:studentId', async (req, res) =
     },
     {
       $unwind: '$courses'
+    },
+    { 
+      $unwind: '$courses.courseAssignments' 
     },
     {
       $match: { 'courses.courseAssignments.assignmentId': assignmentId }
