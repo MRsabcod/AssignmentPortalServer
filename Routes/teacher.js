@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import verifyToken from "../middlewares/user.js";
 import Teacher from "../Models/Teacher.js";
 import User from "../Models/User.js";
+import Course from "../Models/Course.js";
 
 const teacherRouter = express.Router();
 
@@ -63,7 +64,9 @@ teacherRouter.post("/login", async (req, res) => {
   if (!isMatch) return res.status(400).send({ error: "password is incorrect" });
   const token = await generateToken(teacher.cnic);
   console.log(token);
-  res.send({ teacher, token });
+const coursesDetails=await Promise.all(teacher.courses.map(async(course)=>{return await Course.findById(course.ID)}))
+
+  res.send({ teacher, token , coursesDetails});
 });
 
 teacherRouter.post("/createPassword", async (req, res) => {

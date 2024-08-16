@@ -17,16 +17,16 @@ const AssignmentuploadFile = async (files) => {
   }
   return fileNames
 }
-cron.schedule('0 0 * * *', async () => {
+cron.schedule('21 4 * * *', async () => {
   const oneWeekAgo = new Date();
-  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  oneWeekAgo.setDate(oneWeekAgo.getDate());
 
   try {
     // Fetch assignments with deadlines older than one week
     const outdatedAssignments = await Assignment.find({
       deadline: { $lt: oneWeekAgo }
     }).select('_id');
-
+console.log(outdatedAssignments)
     const outdatedAssignmentIds = outdatedAssignments.map(assignment => assignment._id.toString());
 
     // Remove outdated assignments from StudentAssignments
@@ -35,13 +35,14 @@ cron.schedule('0 0 * * *', async () => {
       {
         $pull: {
           'courses.$[].courseAssignments': {
-            assignmentId: { $in: outdatedAssignmentIds }
+            assignmentId: { $in: outdatedAssignmentIds },
+            starred:false
           }
         }
       }
     );
 
-    console.log(`${updated.nModified} documents updated, outdated assignments removed.`);
+    console.log(`${updated} documents updated, outdated assignments removed.`);
   } catch (error) {
     console.error('Error removing outdated assignments:', error);
   }
@@ -120,12 +121,7 @@ console.log(isSubmitted)
 
 })
 
-studentAssignmentsRouter.get('/:id', async (req, res) => {
-  const studentId = req.params.id
 
-  const studentAssignments = await StudentAssignments.findOne({ studentId }).select('-studentId -_id -__v')
-  res.status(200).send(studentAssignments)
-})
 
 studentAssignmentsRouter.post("/submit", upload.any(), async (req, res) => {
   try {
