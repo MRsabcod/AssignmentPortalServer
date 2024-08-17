@@ -97,18 +97,21 @@ studentAssignmentsRouter.get("/:studentId/assignments", async (req, res) => {
     const categorizedAssignments = assignments.reduce(
       (acc, assignment) => {
         // console.log(assignment._id.toString(),submittedAssignmentIds[0])
-        const isSubmitted = submittedAssignmentIds[0].map(
+    submittedAssignmentIds[0].map(
       
-        (id)=> {id=== assignment._id.toString()}
-        );
-console.log(isSubmitted)
-        if (isSubmitted) {
+        (id)=> {if(id=== assignment._id.toString()){
           acc.submitted.push(assignment);
-        } else if (now >= new Date(assignment.deadline)) {
+        }
+        else if (now >= new Date(assignment.deadline)) {
           acc.nonSubmitted.push(assignment);
-        } else {
+        }else {
           acc.current.push(assignment);
         }
+       
+        }
+        
+        );
+
         return acc;
       },
       { current: [], submitted: [], nonSubmitted: [] }
