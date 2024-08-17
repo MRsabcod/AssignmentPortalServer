@@ -48,10 +48,10 @@ console.log(outdatedAssignments)
   }
 });
 const studentAssignmentsRouter = express.Router()
-studentAssignmentsRouter.get("/:studentId/assignments", async (req, res) => {
+studentAssignmentsRouter.get("/:studentId/:courseId/assignments", async (req, res) => {
   try {
-    const { studentId } = req.params;
-    const { courseId } = req.body;
+    const { studentId,courseId } = req.params;
+
 
     if (!courseId) {
       return res.status(400).json({ message: "Course ID is required" });
