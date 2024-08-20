@@ -88,35 +88,51 @@ studentAssignmentsRouter.get("/:studentId/:courseId/assignments", async (req, re
       
         submittedAssignments
         .map((a) => a.assignmentId).map((id)=>id)
-        
+        if(submittedAssignmentIds[0]===undefined){
+          return res.status(200).send({msg:"No Assignment Yet!"})
+        }
       
     
-    console.log(submittedAssignmentIds[0])
+    console.log(submittedAssignmentIds,"S")
     const now = new Date();
 
     const categorizedAssignments = assignments.reduce(
       (acc, assignment) => {
         // console.log(assignment._id.toString(),submittedAssignmentIds[0])
-    submittedAssignmentIds[0].map(
+//     submittedAssignmentIds[0].map(
       
-        (id)=> {if(id=== assignment._id.toString()){
-          acc.submitted.push(assignment);
-        }
-        else if (now >= new Date(assignment.deadline)) {
-          acc.nonSubmitted.push(assignment);
-        }else {
-          acc.current.push(assignment);
-        }
+//         (id)=> {
+// console.log(id,assignment._id.toString())
+
+//           if(id=== assignment._id.toString()){
+//           acc.submitted.push(assignment);
+          
+//         }
+//         else if (now >= new Date(assignment.deadline)) {
+//           acc.nonSubmitted.push(assignment);
+//         }else {
+//           acc.current.push(assignment);
+//         }
        
-        }
+//         }
         
-        );
+//         );
+if(submittedAssignmentIds[0]?.includes(assignment._id.toString())){
+  acc.submitted.push(assignment);
+
+}
+else if (now >= new Date(assignment.deadline) ) {
+  acc.nonSubmitted.push(assignment);
+
+}else {
+  acc.current.push(assignment);
+
+}
 
         return acc;
       },
       { current: [], submitted: [], nonSubmitted: [] }
     );
-
     res.json(categorizedAssignments);
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
