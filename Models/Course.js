@@ -15,8 +15,13 @@ const courseSchema = new mongoose.Schema(
     },
     teacherId:{
       type: String,
-    }
+    },
+    venue:{
+      type:String
+  
+    },
   },
+ 
   {
     timeStamps: true,
   }

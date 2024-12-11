@@ -7,24 +7,23 @@ const assignemntSchema=new Schema({
         type:String,
         required:true
         },
+        maxMarks:{
+            type:Number,
+            default:100
+        },
         deadline:{
             required:true,
             type:Date,
         },
         desc:{  
             type:String,
-            required:true},
+            },
 
-            teacherAttachedFileIds:[{
-                type:String,
-            }],
+            teacherAttachedFileLinks:[{}],
             teacherAttachedLink:{
                 type:String,
             },
-            teacherAttachedFile:[{
-                type:String,
-
-            }],
+          
             courseId:{
                 type:String,
             }

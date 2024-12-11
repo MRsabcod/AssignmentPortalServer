@@ -22,11 +22,7 @@ const userSchema = new Schema({
         type: String,
 
     },
-    refreshToken: {
-        type: [String],
-        default: [''],
-        required: true
-    },
+ 
     avatar: {
         type: String,
         // required:true

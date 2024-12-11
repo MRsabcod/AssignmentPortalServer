@@ -1,55 +1,50 @@
 import mongoose, { Schema } from "mongoose";
 
-const studentAssignemntSchema=new Schema({
-    studentId:{
-        type:String,
-    },
-    studentName:{
-        type:String,
-    },
-    
-    
-    assignments:{
-        type:[
-            {
-                courseId:{
-                    type:String,
-                },
-                assignmentId:{
-                    type:String,
-                },
-                starred: {
-                    type: Boolean,
-                    default: false
-                },
-                studentAttachedLink:{
-                    type:String,
-                },
-                studentAttachedFile:{
-                    type:String,
-                },
-                studentAttachedFileContentType:{
-                    type:String,
-                },
-                studentAttachedFileIds:[{
-                    type:String,
-                }],
-                grade:{
-                    type:Number,
-                    default:-1,
-                    max:100
-                    
-                }
+const studentAssignemntSchema = new Schema({
+  studentId: {
+    type: String,
+  },
+  studentName: {
+    type: String,
+  },
+  courses: [
+    {
+      courseId: {
+        type: String,
+      },
+      maxPossibelScore:{
 
-            }
-        ],
+        type:Number
+      },
+      totalPercentage: {
+        type: Number,
+        default: 0,
+      },
+      courseAssignments: [
+        {
+          assignmentId: {
+            type: String,
+          },
+          starred: {
+            type: Boolean,
+            default: false,
+          },
+          studentAttachedLinks: {
+            type: String,
+          },
 
+          studentAttachedFileLinks: [{}],
+          grade: {
+            type: Number,
+            default: -1,
+          },
+        },
+      ],
     },
-    totalPercentage:{
-        type:Number,
-        default : 0,
-    }
-
-})
-const StudentAssignments=mongoose.model('StudentsAssignments',studentAssignemntSchema)
-export default StudentAssignments
+  ],
+});
+const StudentAssignments = mongoose.model(
+  "StudentsAssignments",
+  studentAssignemntSchema
+);
+export default StudentAssignments;
